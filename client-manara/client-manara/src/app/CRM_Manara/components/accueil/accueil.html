@@ -1,0 +1,202 @@
+<app-header-acceuil></app-header-acceuil>
+
+<header class="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 text-white">
+  <div class="absolute inset-0 bg-black/10"></div>
+  <div class="relative max-w-7xl mx-auto px-6 lg:px-10 py-16 md:py-24">
+    <div class="max-w-3xl">
+      <div class="flex items-center gap-2 text-sm text-emerald-100 mb-6">
+        <a routerLink="/" class="hover:text-white transition">{{ i18n.t('nav.home') }}</a>
+        <span>›</span>
+        <span class="text-white font-medium">{{ i18n.t('nav.programming') }}</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight mb-5">
+        {{ i18n.t('hero.title') }}
+      </h1>
+      <p class="text-lg md:text-xl text-emerald-50 leading-relaxed mb-8">
+        {{ i18n.t('hero.subtitle') }}
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a href="#liste"
+             class="inline-flex items-center rounded-2xl bg-white px-6 py-3 text-sm md:text-base font-bold !text-emerald-700 shadow-lg hover:bg-emerald-50 transition">
+          {{ i18n.t('hero.cta1') }}
+        </a>
+        <a routerLink="/politiques"
+           class="inline-flex items-center rounded-2xl border border-white/30 bg-white/10 px-6 py-3 text-sm md:text-base font-semibold text-white backdrop-blur hover:bg-white/20 transition">
+          {{ i18n.t('hero.cta2') }}
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container main" id="liste">
+  <section class="filters" aria-label="Filtres">
+    <div class="filters__row">
+      <div class="field">
+        <label for="q">Rechercher</label>
+        <input
+          id="q"
+          type="search"
+          placeholder="Ex.: yoga, danse, tricot…"
+          [(ngModel)]="filters.q"
+        />
+      </div>
+
+      <div class="field">
+        <label for="cat">Catégorie</label>
+        <select id="cat" [(ngModel)]="filters.cat" (click)="applyFilters()">
+          <option value="">Toutes</option>
+          <option *ngFor="let categorie of categories" [value]="categorie">
+            {{ categorie }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="jour">Jour</label>
+        <select id="jour" [(ngModel)]="filters.jour" (click)="applyFilters()">
+          <option value="">Tous</option>
+          <option *ngFor="let jour of jours" [value]="jour">
+            {{ jour }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="tri">Trier</label>
+        <select id="tri" [(ngModel)]="filters.tri" (change)="applyFilters()">
+          <option value="nom">Nom (A-Z)</option>
+          <option value="prixAsc">Prix (croissant)</option>
+          <option value="prixDesc">Prix (décroissant)</option>
+        </select>
+      </div>
+
+      
+    </div>
+
+    
+  </section>
+
+  <section class="carousel" aria-label="Galerie">
+    <div class="carousel__viewport" tabindex="0"  #carouselViewport>
+      <article
+        class="carousel__slide"
+        *ngFor="let slide of slides; let i = index"
+        [attr.aria-label]="'Slide ' + (i + 1)"
+        [class.is-active]="i === currentSlide"
+      >
+        <img [src]="slide.image" [alt]="slide.alt" />
+      </article>
+    </div>
+
+    <button class="carousel__btn carousel__btn--prev" type="button" aria-label="Précédent" (click)="prevSlide()">
+      ‹
+    </button>
+
+    <button class="carousel__btn carousel__btn--next" type="button" aria-label="Suivant" (click)="nextSlide()">
+      ›
+    </button>
+
+    <div class="carousel__dots" aria-label="Navigation du carrousel">
+      <button
+        *ngFor="let slide of slides; let i = index"
+        class="dot"
+        type="button"
+        [class.is-active]="i === currentSlide"
+        [attr.aria-label]="'Aller à la diapo ' + (i + 1)"
+        (click)="goToSlide(i)"
+      ></button>
+    </div>
+  </section>
+
+<section class="grid" aria-label="Liste des activités">
+
+  <p *ngIf="loading" class="text-center text-slate-500">
+    Chargement des activités...
+  </p>
+
+  <p *ngIf="erreur && !loading" class="text-center text-red-600">
+    {{ erreur }}
+  </p>
+
+  <p *ngIf="!loading && !erreur && filteredActivities.length === 0" class="text-center text-slate-500">
+    Aucune activité trouvée.
+  </p>
+
+  <article class="card" *ngFor="let activite of filteredActivities">
+    <div
+      class="card__media"
+     
+    >
+   <img
+    *ngIf="activite.photo"
+    [src]="'http://localhost:8080' + activite.photo"
+    [alt]="activite.title"
+    class="h-full w-full object-cover"
+  />
+
+  <div
+    *ngIf="!activite.photo"
+    class="flex h-full w-full items-center justify-center bg-slate-200 text-sm font-bold text-slate-500"
+  >
+    Aucune image
+  </div>
+  </div>
+
+    <div class="card__body">
+      <div class="card__meta">
+        <span class="pill" [ngClass]="activite.pillClass">
+          {{ activite.category }}
+        </span>
+        <span class="meta">{{ activite.meta }}</span>
+      </div>
+
+      <h2 class="card__title">{{ activite.title }}</h2>
+
+      <p class="card__desc">
+        {{ activite.description }}
+      </p>
+
+      <dl class="card__details">
+        <div>
+          <dt>Jour</dt>
+          <dd>{{ activite.day }}</dd>
+        </div>
+        <div>
+          <dt>Lieu</dt>
+          <dd>{{ activite.location }}</dd>
+        </div>
+        <div>
+          <dt>Coût</dt>
+          <dd>{{ activite.price }}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="card__actions">
+      <a *ngIf="role === 'PARENT'"
+        class="btn btn--ghost btn--full"
+        [routerLink]="['/parent/activites', activite.id]"
+      >
+        Inscrivez-vous
+      </a>
+
+   
+    </div>
+  </article>
+</section>
+
+  <section class="banner" aria-label="Information">
+    <div class="banner__icon" aria-hidden="true">i</div>
+    <div class="banner__content">
+      <h3>Besoin d’aide pour choisir?</h3>
+      <p>
+        Contactez-nous pour être orienté vers l’activité qui correspond à votre âge,
+        votre horaire et vos objectifs.
+      </p>
+    </div>
+    <a class="btn btn--soft" routerLink="/contact">Nous joindre</a>
+  </section>
+</main>
+
+<app-footer-acceuil></app-footer-acceuil>

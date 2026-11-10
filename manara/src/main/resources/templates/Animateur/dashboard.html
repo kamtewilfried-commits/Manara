@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Tableau de bord animateur</title>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950" >
+
+<div th:replace="~{fragments/headerAnimateur :: headerAnimateur}"></div>
+
+<div  class="flex min-h-screen bg-slate-100" >
+
+    <div th:replace="~{fragments/sidebarAnimateur :: sidebarAnimateur('dashboard')}"></div>
+
+    <main  class="container page">
+
+        <div class="mb-6">
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">
+                Tableau de bord
+            </h1>
+            <p class="mt-1 text-sm font-medium text-slate-500"
+               th:text="'Bonjour ' + ${connectedUser.firstName} + ', voici vos sessions du jour'">
+                Bonjour
+            </p>
+        </div>
+
+        <!-- STATS -->
+        <div class="mb-8 grid gap-4 md:grid-cols-3">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="text-3xl font-extrabold text-slate-900" th:text="${totalActivites}">0</div>
+                <div class="mt-1 text-sm font-medium text-slate-500">Activités assignées</div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="text-3xl font-extrabold text-slate-900" th:text="${sessionsCetteSemaine}">0</div>
+                <div class="mt-1 text-sm font-medium text-slate-500">Sessions cette semaine</div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="text-3xl font-extrabold text-slate-900" th:text="${totalEnfants}">0</div>
+                <div class="mt-1 text-sm font-medium text-slate-500">Enfants inscrits au total</div>
+            </div>
+        </div>
+
+        <!-- SESSION DU JOUR -->
+        <div th:if="${sessionDuJour != null}"
+             class="mb-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-lg font-extrabold text-slate-900">Session en cours aujourd'hui</h2>
+                <span class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
+            En cours
+        </span>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold text-slate-900"
+                    th:text="${sessionDuJour.activity.name}">Activité</h3>
+
+                <p class="mt-1 text-sm text-slate-500"
+                   th:text="${#temporals.format(sessionDuJour.startDate, 'EEEE d MMMM yyyy')}
+                    + ' · '
+                    + ${#temporals.format(sessionDuJour.startDate, 'HH:mm')}
+                    + ' – '
+                    + ${#temporals.format(sessionDuJour.endDate, 'HH:mm')}
+                    + ' · '
+                    + ${sessionDuJour.location}">
+                </p>
+            </div>
+
+            <div class="mt-4 grid gap-4 md:grid-cols-3 text-sm text-slate-700">
+                <div>
+                    <strong th:text="${sessionDuJour.capacity - sessionDuJour.availableSpots}
+                             + ' / '
+                             + ${sessionDuJour.capacity}"></strong>
+                    inscrits
+                </div>
+
+           <!--     <div>
+                    <strong th:text="${sessionDuJour.activity.ageRange}"></strong>
+                    tranche d'âge
+                </div>
+-->
+                <div>
+                    <strong th:text="${sessionDuJour.location}"></strong>
+                    lieu
+                </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-3">
+                <a th:href="@{/animateur/presence/{id}(id=${sessionDuJour.id})}"
+                   class="rounded-full bg-blue-600 px-5 py-2 text-sm font-bold text-white hover:bg-blue-700 transition">
+                    Prendre les présences
+                </a>
+
+                <a th:href="@{/animateur/sessions/{id}(id=${sessionDuJour.id})}"
+                   class="rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">
+                    Voir les inscrits
+                </a>
+            </div>
+        </div>
+
+        <!-- PAS DE SESSION -->
+        <div th:if="${sessionDuJour == null}"
+             class="mb-8 rounded-3xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-400 shadow-sm">
+            Aucune session en cours aujourd'hui.
+        </div>
+
+        <!-- PROCHAINES SESSIONS -->
+        <div class="rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                <h2 class="text-lg font-extrabold text-slate-900">Prochaines sessions</h2>
+                <a th:href="@{/animateur/sessions}"
+                   class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">
+                    Voir tout
+                </a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-slate-50 text-slate-500">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Activité</th>
+                        <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Date</th>
+                        <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Heure</th>
+                        <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Lieu</th>
+                        <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Inscrits</th>
+                        <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Statut</th>
+                    </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-slate-200 text-slate-700">
+                    <tr th:each="s : ${prochainesSessions}" class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-semibold"
+                            th:text="${s.activity.name}"></td>
+
+                        <td class="px-6 py-4"
+                            th:text="${#temporals.format(s.startDate, 'EEE d MMM')}"></td>
+
+                        <td class="px-6 py-4"
+                            th:text="${#temporals.format(s.startDate, 'HH:mm')}
+                             + ' – '
+                             + ${#temporals.format(s.endDate, 'HH:mm')}"></td>
+
+                        <td class="px-6 py-4"
+                            th:text="${s.location}"></td>
+
+                        <td class="px-6 py-4"
+                            th:text="${s.capacity - s.availableSpots}
+                             + ' / '
+                             + ${s.capacity}"></td>
+
+                        <td class="px-6 py-4">
+                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                          th:classappend="${s.status == 'PLANNED'} ? ' bg-blue-50 text-blue-700' : ' bg-indigo-50 text-indigo-700'"
+                          th:text="${s.status == 'PLANNED'} ? 'Planifiée' : 'En cours'">
+                    </span>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(prochainesSessions)}">
+                        <td colspan="6" class="px-6 py-8 text-center text-slate-400">
+                            Aucune session à venir
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

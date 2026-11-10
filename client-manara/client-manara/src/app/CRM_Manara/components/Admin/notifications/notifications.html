@@ -1,0 +1,191 @@
+<app-header-acceuil></app-header-acceuil>
+
+<div class="flex min-h-screen overflow-auto bg-slate-100 dark:bg-slate-900 transition-colors duration-200">
+  <app-sidebar-admin [activePage]="'notifications'"></app-sidebar-admin>
+
+  <main class="flex-1 p-8">
+    <div class="mb-6">
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Notifications</h1>
+      <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+        Envoyez des messages aux parents et suivez les livraisons
+      </p>
+    </div>
+
+    <div *ngIf="succes"
+         class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+      {{ succes }}
+    </div>
+
+    <div *ngIf="erreur"
+         class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+      {{ erreur }}
+    </div>
+
+    <!-- FORMULAIRE -->
+    <div class="mb-8 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+      <h2 class="mb-6 text-lg font-extrabold text-slate-900 dark:text-white">Envoyer un message</h2>
+
+      <form (ngSubmit)="envoyerNotification()" #notifFormRef="ngForm" class="space-y-6">
+        <div class="grid gap-4 md:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Destinataires</label>
+            <select
+              name="recipientType"
+              [(ngModel)]="notifForm.recipientType"
+              class="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-white px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
+            >
+              <option value="ALL">Tous les parents</option>
+              <option value="ACTIVITY">Parents d'une activité</option>
+              <option value="ONE">Un parent en particulier</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Type</label>
+            <select
+              name="type"
+              [(ngModel)]="notifForm.type"
+              class="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-white px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
+            >
+              <option value="REMINDER">Rappel</option>
+              <option value="CONFIRMATION">Confirmation</option>
+              <option value="CANCELLATION">Annulation</option>
+              <option value="RECEIPT">Reçu</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Activité -->
+        <div *ngIf="notifForm.recipientType === 'ACTIVITY'">
+          <label class="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Activité</label>
+          <select
+            name="activityId"
+            [(ngModel)]="notifForm.activityId"
+            class="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-white px-4 py-3 text-sm"
+          >
+            <option [ngValue]="null">Choisir une activité</option>
+            <option *ngFor="let activity of activities" [ngValue]="activity.id">
+              {{ activity.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Parent -->
+        <div *ngIf="notifForm.recipientType === 'ONE'">
+          <label class="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Parent</label>
+          <select
+            name="parentId"
+            [(ngModel)]="notifForm.parentId"
+            class="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-white px-4 py-3 text-sm"
+          >
+            <option [ngValue]="null">Choisir un parent</option>
+            <option *ngFor="let parent of parents" [ngValue]="parent.id">
+              {{ parent.firstName }} {{ parent.lastName }} — {{ parent.email }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Sujet</label>
+          <input
+            type="text"
+            name="subject"
+            [(ngModel)]="notifForm.subject"
+            required
+            placeholder="Sujet du message"
+            class="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-white px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Message</label>
+          <textarea
+            name="message"
+            [(ngModel)]="notifForm.message"
+            rows="4"
+            required
+            placeholder="Contenu du message..."
+            class="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-white px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          class="rounded-full bg-blue-700 px-6 py-3 text-sm font-bold text-white hover:bg-blue-800 transition"
+        >
+          Envoyer
+        </button>
+      </form>
+    </div>
+
+    <!-- HISTORIQUE -->
+    <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+      <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+        <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Historique des envois</h2>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Destinataire</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Sujet</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Type</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Envoyé le</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Email</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
+            <tr *ngFor="let notif of historyRows" class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
+              <td class="px-6 py-4 font-semibold">
+                {{ notif.recipientLabel }}
+              </td>
+
+              <td class="px-6 py-4">{{ notif.subject }}</td>
+
+              <td class="px-6 py-4">
+                <span
+                  class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700': notif.type === 'CONFIRMATION',
+                    'bg-blue-50 text-blue-700': notif.type === 'REMINDER',
+                    'bg-red-50 text-red-700': notif.type === 'CANCELLATION',
+                    'bg-purple-50 text-purple-700': notif.type === 'RECEIPT'
+                  }"
+                >
+                  {{
+                    notif.type === 'CONFIRMATION' ? 'Confirmation' :
+                    notif.type === 'REMINDER' ? 'Rappel' :
+                    notif.type === 'CANCELLATION' ? 'Annulation' :
+                    'Reçu'
+                  }}
+                </span>
+              </td>
+
+              <td class="px-6 py-4">
+                {{ notif.sentAt | date:'d MMM yyyy HH:mm' }}
+              </td>
+
+              <td class="px-6 py-4">
+                <span
+                  class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                  [ngClass]="notif.emailSent ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'"
+                >
+                  {{ notif.emailSent ? 'Envoyé' : 'Échec' }}
+                </span>
+              </td>
+            </tr>
+
+            <tr *ngIf="historyRows.length === 0">
+              <td colspan="5" class="px-6 py-8 text-center text-slate-400">
+                Aucune notification envoyée
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+<app-footer-acceuil></app-footer-acceuil>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Mon profil</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body  class="bg-slate-950">
+
+<div th:replace="~{fragments/headerParent :: headerParent}"></div>
+
+<div class="flex min-h-screen bg-slate-100">
+
+    <div th:replace="~{fragments/sidebarParent :: sidebarParent('profil')}"></div>
+
+    <main  class="container page">
+
+        <div class="mb-6">
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Mon profil</h1>
+            <p class="mt-1 text-sm font-medium text-slate-500">
+                Gérez vos informations personnelles
+            </p>
+        </div>
+
+        <div th:if="${succes}"
+             class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"
+             th:text="${succes}"></div>
+
+        <div th:if="${erreur}"
+             class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
+             th:text="${erreur}"></div>
+
+        <div class="max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+            <!-- Header profil -->
+            <div class="mb-6 flex items-center gap-4">
+                <div class="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-xl font-bold shadow-sm"
+                     th:text="${#strings.toUpperCase(#strings.substring(userForm.firstName ?: 'P',0,1) + #strings.substring(userForm.lastName ?: 'A',0,1))}">
+                    MD
+                </div>
+
+                <div>
+                    <div class="text-lg font-bold text-slate-900"
+                         th:text="${(userForm.firstName ?: '') + ' ' + (userForm.lastName ?: '')}">
+                        Nom
+                    </div>
+                    <div class="text-sm text-slate-500"
+                         th:text="${'Membre depuis ' + #temporals.format(connectedUser.createdAt, 'MMMM yyyy')}">
+                        Membre depuis
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form infos -->
+            <form th:action="@{/parent/profil}" method="post" th:object="${userForm}" class="space-y-5">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-slate-700">Prénom</label>
+                        <input type="text" th:field="*{firstName}" required
+                               class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300">
+                        <span class="mt-1 block text-sm text-red-600"
+                              th:if="${#fields.hasErrors('firstName')}"
+                              th:errors="*{firstName}"></span>
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-slate-700">Nom</label>
+                        <input type="text" th:field="*{lastName}" required
+                               class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300">
+                        <span class="mt-1 block text-sm text-red-600"
+                              th:if="${#fields.hasErrors('lastName')}"
+                              th:errors="*{lastName}"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-bold text-slate-700">Adresse courriel</label>
+                    <input type="email" th:field="*{email}" required
+                           class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300">
+                    <span class="mt-1 block text-sm text-red-600"
+                          th:if="${#fields.hasErrors('email')}"
+                          th:errors="*{email}"></span>
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-bold text-slate-700">Téléphone</label>
+                    <input type="tel" th:field="*{phone}"
+                           placeholder="514-555-0000"
+                           class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300">
+                </div>
+
+                <button type="submit"
+                        class="w-full rounded-full bg-blue-700 px-6 py-3 text-sm font-bold text-white hover:bg-blue-800 transition">
+                    Enregistrer les modifications
+                </button>
+            </form>
+
+            <!-- Mot de passe -->
+            <div class="mt-8 border-t border-slate-200 pt-6">
+                <h3 class="mb-4 text-sm font-bold text-slate-800">
+                    Changer le mot de passe
+                </h3>
+
+                <form th:action="@{/parent/profil/mot-de-passe}"
+                      method="post"
+                      th:object="${passwordForm}"
+                      class="space-y-5">
+
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-slate-700">Mot de passe actuel</label>
+                        <input type="password" th:field="*{currentPassword}"
+                               placeholder="••••••••"
+                               class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                    </div>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label class="mb-2 block text-sm font-bold text-slate-700">Nouveau</label>
+                            <input type="password" th:field="*{newPassword}"
+                                   placeholder="••••••••"
+                                   class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-bold text-slate-700">Confirmer</label>
+                            <input type="password" th:field="*{confirmPassword}"
+                                   placeholder="••••••••"
+                                   class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">
+                        Changer le mot de passe
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

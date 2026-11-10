@@ -1,0 +1,174 @@
+<app-header-acceuil></app-header-acceuil>
+
+<div class="flex min-h-screen bg-slate-100">
+
+  <app-sidebar-admin [activePage]="'dashboard'"></app-sidebar-admin>
+
+  <main class="flex-1">
+
+    <!-- HEADER -->
+    <section class="border-b border-slate-200 bg-white">
+      <div class="px-8 py-8 lg:px-12">
+        <div>
+          <div class="mb-3 flex items-center gap-2 text-sm font-medium text-slate-400">
+            <span>Admin</span>
+            <span>›</span>
+            <span class="text-slate-600">Dashboard</span>
+          </div>
+
+          <h1 class="text-4xl font-extrabold tracking-tight text-slate-900">
+            Tableau de bord
+          </h1>
+
+          <p class="mt-3 max-w-2xl text-base leading-7 text-slate-500">
+            Statistiques globales du centre communautaire, revenus,
+            inscriptions et activités.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-8 py-8 pb-16 lg:px-12">
+
+      <!-- KPIs -->
+      <div class="mb-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-2xl">
+          <p class="text-sm font-extrabold uppercase tracking-wide text-slate-400">
+            Activités actives
+          </p>
+          <h2 class="mt-3 text-4xl font-extrabold text-emerald-600">
+            {{ activeActivitiesCount }}
+          </h2>
+        </div>
+
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-2xl">
+          <p class="text-sm font-extrabold uppercase tracking-wide text-slate-400">
+            Activités inactives
+          </p>
+          <h2 class="mt-3 text-4xl font-extrabold text-slate-900">
+            {{ inactiveActivitiesCount }}
+          </h2>
+        </div>
+
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-2xl">
+          <p class="text-sm font-extrabold uppercase tracking-wide text-slate-400">
+            Revenus totaux
+          </p>
+          <h2 class="mt-3 text-3xl font-extrabold text-emerald-600">
+            {{ totalRevenue | currency:'CAD':'symbol':'1.2-2' }}
+          </h2>
+        </div>
+
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 transition hover:-translate-y-1 hover:shadow-2xl">
+          <p class="text-sm font-extrabold uppercase tracking-wide text-slate-400">
+            Inscriptions totales
+          </p>
+          <h2 class="mt-3 text-4xl font-extrabold text-cyan-700">
+            {{ totalRegistrations }}
+          </h2>
+        </div>
+
+      </div>
+
+      <!-- GRAPHIQUES -->
+      <div class="grid gap-6 xl:grid-cols-2">
+
+        <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-200/60">
+          <h2 class="mb-1 text-xl font-extrabold text-slate-900">
+            Revenus par mois
+          </h2>
+          <p class="mb-5 text-sm text-slate-500">
+            Évolution mensuelle des revenus.
+          </p>
+
+          <div class="h-80">
+            <canvas
+              baseChart
+              [data]="revenueByMonthChartData"
+              [options]="chartOptions"
+              [type]="'line'">
+            </canvas>
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-200/60">
+          <h2 class="mb-1 text-xl font-extrabold text-slate-900">
+            Inscriptions par activité
+          </h2>
+          <p class="mb-5 text-sm text-slate-500">
+            Nombre d’inscriptions selon chaque activité.
+          </p>
+
+          <div class="h-80">
+            <canvas
+              baseChart
+              [data]="registrationsByActivityChartData"
+              [options]="chartOptions"
+              [type]="'bar'">
+            </canvas>
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-200/60">
+          <h2 class="mb-1 text-xl font-extrabold text-slate-900">
+            Revenus par activité
+          </h2>
+          <p class="mb-5 text-sm text-slate-500">
+            Répartition des revenus générés par activité.
+          </p>
+
+          <div class="h-80">
+            <canvas
+              baseChart
+              [data]="revenueByActivityChartData"
+              [options]="chartOptions"
+              [type]="'bar'">
+            </canvas>
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-200/60">
+          <h2 class="mb-1 text-xl font-extrabold text-slate-900">
+            Statut des inscriptions
+          </h2>
+          <p class="mb-5 text-sm text-slate-500">
+            Distribution des inscriptions selon leur statut.
+          </p>
+
+          <div class="h-80">
+            <canvas
+              baseChart
+              [data]="registrationStatusChartData"
+              [options]="chartOptions"
+              [type]="'pie'">
+            </canvas>
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-200/60 xl:col-span-2">
+          <h2 class="mb-1 text-xl font-extrabold text-slate-900">
+            Sessions par animateur
+          </h2>
+          <p class="mb-5 text-sm text-slate-500">
+            Vue globale du nombre de sessions associées aux animateurs.
+          </p>
+
+          <div class="h-80">
+            <canvas
+              baseChart
+              [data]="sessionsByAnimatorChartData"
+              [options]="chartOptions"
+              [type]="'bar'">
+            </canvas>
+          </div>
+        </section>
+
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<app-footer-acceuil></app-footer-acceuil>

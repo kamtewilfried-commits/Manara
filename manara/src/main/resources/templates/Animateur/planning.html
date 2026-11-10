@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Mon planning</title>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950"  >
+
+<div th:replace="~{fragments/headerAnimateur :: headerAnimateur}"></div>
+
+<div class="flex min-h-screen bg-slate-100">
+
+    <div th:replace="~{fragments/sidebarAnimateur :: sidebarAnimateur('planning')}"></div>
+
+    <main class="animateur-content">
+
+        <!-- Navigation semaine -->
+        <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Mon planning</h1>
+                <p class="mt-1 text-sm font-medium text-slate-500" th:text="${weekLabel}">
+                    Semaine du...
+                </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <a th:href="@{/animateur/planning(semaine=${previousWeek})}"
+                   class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
+                    ← Préc.
+                </a>
+
+                <a th:href="@{/animateur/planning}"
+                   class="inline-flex items-center rounded-full bg-blue-700 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800">
+                    Aujourd'hui
+                </a>
+
+                <a th:href="@{/animateur/planning(semaine=${nextWeek})}"
+                   class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
+                    Suiv. →
+                </a>
+            </div>
+        </div>
+
+        <!-- Grille planning -->
+        <div class="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <div class="min-w-[900px]">
+                <!-- En-tête -->
+                <div class="grid grid-cols-8 border-b border-slate-200 bg-slate-50 text-slate-500">
+                    <div class="px-4 py-4 text-xs font-extrabold uppercase tracking-wide">Heure</div>
+                    <div th:each="day : ${weekDays}"
+                         th:text="${day}"
+                         class="px-4 py-4 text-xs font-extrabold uppercase tracking-wide">
+                        Lun
+                    </div>
+                </div>
+
+                <!-- Lignes -->
+                <div th:each="slot : ${timeSlots}" class="grid grid-cols-8 border-b border-slate-100 last:border-b-0">
+                    <div class="border-r border-slate-100 px-4 py-4 text-sm font-bold text-slate-600"
+                         th:text="${slot}">
+                        09h00
+                    </div>
+
+                    <div class="min-h-[110px] border-r border-slate-100 p-3 last:border-r-0"
+                         th:each="day : ${weekDays}">
+                        <div th:each="event : ${planningEvents}"
+                             th:if="${event.day == day and event.slot == slot}">
+                            <a th:href="@{/animateur/sessions/{id}(id=${event.sessionId})}"
+                               class="block rounded-2xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900 shadow-sm transition hover:bg-blue-100">
+                                <strong class="block text-xs font-extrabold uppercase tracking-wide"
+                                        th:text="${event.activityName}">
+                                    Activité
+                                </strong>
+
+                                <span class="mt-1 block text-xs text-blue-700"
+                                      th:text="${event.inscrits} + ' inscrits'">
+                            Inscrits
+                        </span>
+
+                                <span class="mt-1 block text-xs text-blue-600"
+                                      th:text="${event.location}">
+                            Lieu
+                        </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aucune session -->
+        <div th:if="${#lists.isEmpty(planningEvents)}"
+             class="rounded-3xl border border-slate-200 bg-white px-6 py-10 text-center text-sm font-medium text-slate-400 shadow-sm">
+            Aucune session planifiée pour cette semaine.
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

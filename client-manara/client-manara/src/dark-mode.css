@@ -1,0 +1,185 @@
+/* ---- Variables de base ---- */
+:root {
+  --bg-primary:      #ffffff;
+  --bg-secondary:    #f8fafc;
+  --bg-tertiary:     #f1f5f9;
+  --text-primary:    #0f172a;
+  --text-secondary:  #475569;
+  --text-muted:      #94a3b8;
+  --border-color:    #e2e8f0;
+  --shadow-color:    rgba(0, 0, 0, 0.08);
+  --header-bg:       rgba(255,255,255,0.95);
+  --nav-hover:       #f1f5f9;
+}
+
+/* ---- Variables dark mode ---- */
+html.dark {
+  --bg-primary:      #0f172a;
+  --bg-secondary:    #1e293b;
+  --bg-tertiary:     #334155;
+  --text-primary:    #f1f5f9;
+  --text-secondary:  #94a3b8;
+  --text-muted:      #64748b;
+  --border-color:    #334155;
+  --shadow-color:    rgba(0, 0, 0, 0.4);
+  --header-bg:       rgba(15, 23, 42, 0.95);
+  --nav-hover:       #1e293b;
+}
+
+/* ---- Application des variables ---- */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Header sticky */
+.manara-header {
+  background: var(--header-bg) !important;
+  border-color: var(--border-color) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Texte */
+.manara-text-primary   { color: var(--text-primary) !important; }
+.manara-text-secondary { color: var(--text-secondary) !important; }
+.manara-text-muted     { color: var(--text-muted) !important; }
+
+/* Fond */
+.manara-bg-primary   { background-color: var(--bg-primary) !important; }
+.manara-bg-secondary { background-color: var(--bg-secondary) !important; }
+
+/* Bordure */
+.manara-border { border-color: var(--border-color) !important; }
+
+/* Cards */
+.manara-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px 20px;
+  transition: background-color 0.2s;
+}
+
+/* Inputs */
+.manara-input {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.manara-input:focus {
+  border-color: #339999;
+}
+
+/* Dropdown langue */
+.manara-dropdown {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px var(--shadow-color);
+}
+.manara-dropdown-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.manara-dropdown-item:hover {
+  background: var(--nav-hover);
+}
+
+/* Bouton theme toggle */
+.manara-theme-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.manara-theme-btn:hover {
+  border-color: #339999;
+  color: #339999;
+}
+
+/* ---- Tailwind overrides pour dark mode ---- */
+/* Ces règles remplacent les classes dark: de Tailwind
+   sans avoir besoin de tailwind.config.js              */
+
+html.dark .bg-white,
+html.dark .bg-white\/95 {
+  background-color: #1e293b !important;
+}
+
+html.dark .bg-slate-50,
+html.dark .bg-slate-100 {
+  background-color: #334155 !important;
+}
+
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-gray-800 {
+  color: #f1f5f9 !important;
+}
+
+html.dark .text-slate-700,
+html.dark .text-slate-600,
+html.dark .text-gray-700,
+html.dark .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-500,
+html.dark .text-slate-400,
+html.dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+html.dark .border-slate-200,
+html.dark .border-gray-200,
+html.dark .border-b {
+  border-color: #334155 !important;
+}
+
+html.dark .shadow-sm {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+}
+
+html.dark .bg-slate-900,
+html.dark .bg-gray-900 {
+  background-color: #0f172a !important;
+}
+
+html.dark .bg-indigo-100 {
+  background-color: #312e81 !important;
+}
+
+html.dark .text-indigo-700 {
+  color: #a5b4fc !important;
+}
+
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-gray-50:hover {
+  background-color: #334155 !important;
+}
+
+html.dark .rounded-xl.border.border-slate-200,
+html.dark .border.border-gray-200 {
+  border-color: #475569 !important;
+}
+
+/* Sticky header dark */
+html.dark .sticky.top-0 {
+  background-color: rgba(15,23,42,0.95) !important;
+}

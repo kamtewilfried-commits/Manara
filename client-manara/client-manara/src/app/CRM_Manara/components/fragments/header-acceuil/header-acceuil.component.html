@@ -1,0 +1,163 @@
+<!-- ============================================================
+     Header Public (Accueil / Programmation)
+     Ajouts : dropdown langue FR/EN + mode sombre
+     ============================================================ -->
+
+<div class="w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-700 shadow-sm sticky top-0 z-50 transition-colors duration-200">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-4">
+
+      <!-- Logo -->
+      <div class="flex items-center justify-between">
+        <a routerLink="/" class="flex items-center gap-3 group">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
+            <img
+              src="/images/Logo.png"
+              alt="Logo CRM Manara"
+              class="w-9 h-9 rounded-full object-cover"
+            />
+          </div>
+          <div>
+            <h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white group-hover:text-emerald-600 transition">
+              CRM Manara
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ i18n.t('brand.subtitle') }}</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Welcome -->
+      <div class="flex items-center" *ngIf="isLoggedIn">
+  <p class="text-sm md:text-base text-slate-600 bg-slate-100 px-4 py-2 rounded-full">
+    {{ i18n.t('welcome') }},
+    <span class="font-semibold text-emerald-700">{{ email }}</span> 👋
+  </p>
+</div>
+    
+
+      <!-- Navigation -->
+      <nav class="flex flex-wrap items-center gap-3 md:gap-4">
+        <a routerLink="/programmation"
+           class="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition">
+          {{ i18n.t('nav.programming') }}
+        </a>
+
+        <div class="flex gap-6">
+          <a *ngIf="role === 'ADMIN'" routerLink="/dashboard"
+             class="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-emerald-600 transition">
+            Admin
+          </a>
+          <a *ngIf="role === 'PARENT'" routerLink="/parent/activites"
+             class="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-emerald-600 transition">
+            {{ i18n.t('nav.parents') }}
+          </a>
+          <a *ngIf="role === 'ANIMATEUR'" routerLink="/animateur/dashboard"
+             class="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-emerald-600 transition">
+            {{ i18n.t('nav.trainer') }}
+          </a>
+        </div>
+
+        <a routerLink="/chat"
+           class="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-emerald-600 transition">
+          Chat
+        </a>
+
+        <a routerLink="/evenements"
+           class="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-emerald-600 transition">
+          {{ i18n.t('nav.events') }}
+        </a>
+
+        <a href="/#a-propos"
+           class="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-emerald-600 transition">
+          {{ i18n.t('nav.about') }}
+        </a>
+
+        <a routerLink="/checkout"
+           class="inline-flex items-center rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/30 px-4 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 transition">
+          {{ i18n.t('nav.donate') }}
+        </a>
+<a *ngIf="!isLoggedIn" 
+          class="inline-flex items-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition"
+routerLink="/login">
+  {{ i18n.t('btn.login') }}
+</a>
+
+<a *ngIf="!isLoggedIn" 
+          class="inline-flex items-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition"
+routerLink="/register">
+  {{ i18n.t('btn.create-account') }}
+</a>
+
+        <!--<button *ngIf="isLoggedIn"-->
+        <!-- ── Dropdown Langue ── -->
+        <div class="relative lang-wrap" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            (click)="toggleLang()"
+            class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-emerald-400 transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            {{ i18n.t('common.language') }}
+            <svg class="w-3 h-3 transition-transform" [class.rotate-180]="langOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+
+          <!-- Dropdown -->
+          <div *ngIf="langOpen"
+               class="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden z-50">
+            <button type="button" (click)="selectLang('fr')"
+                    class="flex items-center justify-between w-full px-4 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                    [class.text-emerald-600]="i18n.current === 'fr'"
+                    [class.font-semibold]="i18n.current === 'fr'"
+                    [class.text-slate-700]="i18n.current !== 'fr'"
+                    [class.dark:text-slate-300]="i18n.current !== 'fr'">
+              {{ i18n.t('common.french') }}
+              <span *ngIf="i18n.current === 'fr'"
+                    class="w-4 h-4 rounded-full bg-emerald-500 text-white text-xs flex items-center justify-center">✓</span>
+            </button>
+            <button type="button" (click)="selectLang('en')"
+                    class="flex items-center justify-between w-full px-4 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                    [class.text-emerald-600]="i18n.current === 'en'"
+                    [class.font-semibold]="i18n.current === 'en'"
+                    [class.text-slate-700]="i18n.current !== 'en'"
+                    [class.dark:text-slate-300]="i18n.current !== 'en'">
+              {{ i18n.t('common.english') }}
+              <span *ngIf="i18n.current === 'en'"
+                    class="w-4 h-4 rounded-full bg-emerald-500 text-white text-xs flex items-center justify-center">✓</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Mode sombre ── -->
+        <button
+          type="button"
+          (click)="theme.toggle()"
+          class="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:border-emerald-400 transition"
+          [title]="theme.isDark() ? i18n.t('theme.light') : i18n.t('theme.dark')">
+          <!-- Lune (mode clair actif) -->
+          <svg *ngIf="!theme.isDark()" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <!-- Soleil (mode sombre actif) -->
+          <svg *ngIf="theme.isDark()" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          </svg>
+        </button>
+
+        <!-- ── Déconnexion ── -->
+        <button *ngIf="isLoggedIn || role === 'ADMIN'" 
+          type="button"
+          (click)="logout()"
+          class="inline-flex items-center rounded-xl bg-slate-900 dark:bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 dark:hover:bg-slate-600 transition shadow-sm">
+          {{ i18n.t('btn.logout') }}
+        </button>
+      </nav>
+
+    </div>
+  </div>
+</div>
+

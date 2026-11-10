@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<header class="topbar" th:fragment="header">
+    <div class="container topbar__inner">
+        <a class="brand" href="#"><span class="brand__dot"></span>Administration</a>
+        <nav class="nav">
+            <a class="nav__link is-active" href="#activites">Activités</a>
+            <a class="nav__link" href="#sessions">Sessions</a>
+            <a class="nav__link" href="#inscriptions">Inscriptions</a>
+            <a class="nav__link" href="#usagers">Usagers</a>
+            <a class="nav__link" href="#paiements">Paiements</a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit">Se déconnecter</button>
+            </form>
+        </nav>
+        <div class="avatar" aria-hidden="true">AD</div>
+    </div>
+</header>
+</body>
+</html>

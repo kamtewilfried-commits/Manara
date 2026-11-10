@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat WebSocket</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-800">
+
+<div th:replace="fragments/headerPlanning:: header"></div>
+
+<div class="min-h-[calc(100vh-140px)] px-4 py-6 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+            <!-- Sidebar -->
+            <aside class="lg:col-span-4 xl:col-span-3">
+                <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                    <div class="border-b border-slate-100 bg-gradient-to-r from-slate-900 to-slate-700 p-5 text-white">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">Utilisateur</p>
+                                <h2 id="connectedUserLabel" class="mt-1 text-lg font-bold">Chargement...</h2>
+                            </div>
+                            <span class="inline-flex items-center rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-200 ring-1 ring-emerald-300/30">
+                                En ligne
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="p-5">
+                        <div class="mb-3 flex items-center justify-between">
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Salons</h3>
+                            <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">Chat</span>
+                        </div>
+
+                        <div id="chatRooms" class="space-y-3">
+                            <div class="chat-user-pill active cursor-pointer rounded-2xl border border-blue-200 bg-blue-50 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                                 data-group="general" data-label="Général">
+                                <div class="flex items-center justify-between gap-3">
+                                    <span class="text-sm font-semibold text-slate-900">Général</span>
+                                    <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
+                                        Live
+                                    </span>
+                                </div>
+                                <div class="mt-2 text-sm text-slate-500">
+                                    Messages pour tout le monde.
+                                </div>
+                            </div>
+
+                            <div class="chat-user-pill cursor-pointer rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                                 data-group="parents" data-label="Parents">
+                                <div class="flex items-center justify-between gap-3">
+                                    <span class="text-sm font-semibold text-slate-900">Parents</span>
+                                    <span class="inline-flex items-center rounded-full bg-slate-200 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+                                        Privé
+                                    </span>
+                                </div>
+                                <div class="mt-2 text-sm text-slate-500">
+                                    Salon réservé.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <label for="newGroupName" class="mb-2 block text-sm font-semibold text-slate-700">
+                                Nouveau groupe
+                            </label>
+                            <input
+                                    type="text"
+                                    id="newGroupName"
+                                    class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-100"
+                                    placeholder="Nom du nouveau groupe"
+                            >
+                            <button
+                                    id="btn-create-group"
+                                    type="button"
+                                    class="mt-3 inline-flex w-full items-center justify-center rounded-2xl bg-amber-400 px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-amber-300"
+                            >
+                                Créer / rejoindre
+                            </button>
+                        </div>
+
+                        <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <label for="privateRecipient" class="mb-2 block text-sm font-semibold text-slate-700">
+                                Chat privé
+                            </label>
+                            <input
+                                    type="text"
+                                    id="privateRecipient"
+                                    class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                                    placeholder="Utilisateur pour privé"
+                            >
+                            <button
+                                    id="btn-open-private"
+                                    type="button"
+                                    class="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-blue-200 bg-white px-4 py-3 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+                            >
+                                Ouvrir un chat privé
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main -->
+            <section class="lg:col-span-8 xl:col-span-9">
+                <div class="flex h-[70vh] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                    <header class="border-b border-slate-100 bg-white/90 px-5 py-4 backdrop-blur sm:px-6">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Salon actif</p>
+                                <h1 id="activeRoomName" class="mt-1 text-xl font-bold text-slate-900">Général</h1>
+                            </div>
+                            <div class="rounded-2xl bg-slate-50 px-4 py-2 text-sm text-slate-500">
+                                Les messages sont diffusés selon le mode actif.
+                            </div>
+                        </div>
+                    </header>
+
+                    <div id="messagesWindow" class="flex-1 space-y-4 overflow-y-auto bg-gradient-to-b from-slate-50 to-white px-4 py-5 sm:px-6">
+                        <div class="mx-auto w-fit rounded-full bg-slate-200 px-4 py-2 text-sm font-medium text-slate-600 shadow-sm">
+                            Bienvenue dans le chat 👋
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-100 bg-white p-4 sm:p-5">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                            <input
+                                    id="messageInput"
+                                    class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                                    autocomplete="off"
+                                    placeholder="Écrire un message et appuyer sur Entrée..."
+                            />
+
+                            <div class="flex items-center gap-2">
+                                <button
+                                        id="sendButton"
+                                        type="button"
+                                        class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500"
+                                >
+                                    Envoyer
+                                </button>
+
+                                <label
+                                        for="mediaInput"
+                                        class="inline-flex cursor-pointer items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                                >
+                                    📎 Fichier
+                                </label>
+                                <input id="mediaInput" type="file" hidden />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footerAcceuil :: Foot"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

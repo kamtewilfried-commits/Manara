@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Mes inscriptions</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950" >
+
+<div th:replace="~{fragments/headerParent :: headerParent}"></div>
+
+<div class="flex min-h-screen bg-slate-100">
+
+    <div th:replace="~{fragments/sidebarParent :: sidebarParent('inscriptions')}"></div>
+
+    <main class="container page">
+
+        <div class="mb-6">
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Mes inscriptions</h1>
+            <p class="mt-1 text-sm font-medium text-slate-500">
+                Historique de toutes les inscriptions de vos enfants
+            </p>
+        </div>
+
+        <div th:if="${succes}"
+             class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"
+             th:text="${succes}"></div>
+
+        <div th:if="${erreur}"
+             class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
+             th:text="${erreur}"></div>
+
+        <!-- Filtre -->
+        <div class="mb-6 flex flex-wrap gap-3">
+            <select id="statutFilter"
+                    onchange="filtrer()"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 sm:w-auto">
+                <option value="">Tous les statuts</option>
+                <option value="Confirmée">Confirmée</option>
+                <option value="En attente">En attente</option>
+                <option value="Annulée">Annulée</option>
+                <option value="Oui">Liste d'attente</option>
+            </select>
+        </div>
+
+        <div class="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <table class="min-w-full text-sm" id="regTable">
+                <thead class="bg-slate-50 text-slate-500">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Enfant</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Activité</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Date session</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Lieu</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Statut</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Liste att.</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Paiement</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-200 text-slate-700">
+                <tr th:each="reg : ${registrations}" class="hover:bg-slate-50">
+                    <td class="px-6 py-4 font-semibold"
+                        th:text="${reg.child.firstName} + ' ' + ${reg.child.lastName}">
+                        Enfant
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${reg.session.activity.name}">
+                        Activité
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${#temporals.format(reg.session.startDate, 'd MMM yyyy HH:mm')}">
+                        Date
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${reg.session.location}">
+                        Lieu
+                    </td>
+
+                    <td class="px-6 py-4">
+                <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                      th:classappend="${reg.status == 'CONFIRMED'} ? ' bg-emerald-50 text-emerald-700' :
+                                      (${reg.status == 'PENDING'} ? ' bg-amber-50 text-amber-700' : ' bg-red-50 text-red-700')"
+                      th:text="${reg.status == 'CONFIRMED'} ? 'Confirmée' :
+                               (${reg.status == 'PENDING'} ? 'En attente' : 'Annulée')">
+                    Statut
+                </span>
+                    </td>
+
+                    <td class="px-6 py-4">
+                <span th:if="${reg.waitlist}"
+                      class="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
+                    Oui
+                </span>
+                        <span th:if="${!reg.waitlist}" class="text-slate-400">Non</span>
+                    </td>
+
+                    <td class="px-6 py-4">
+                <span th:if="${reg.payment != null}"
+                      class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                      th:classappend="${reg.payment.status == 'COMPLETED'} ? ' bg-emerald-50 text-emerald-700' : ' bg-amber-50 text-amber-700'"
+                      th:text="${reg.payment.status == 'COMPLETED'} ? 'Payé' : 'En attente'">
+                    Paiement
+                </span>
+
+                        <span th:if="${reg.payment == null}" class="text-slate-400">—</span>
+                    </td>
+
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap gap-2 whitespace-nowrap">
+                            <a th:href="@{/parent/inscriptions/{id}/confirmation(id=${reg.id})}"
+                               th:if="${reg.status == 'CONFIRMED'}"
+                               class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
+                                Reçu
+                            </a>
+
+                            <form th:action="@{/parent/inscriptions/{id}/annuler(id=${reg.id})}"
+                                  method="post"
+                                  class="inline"
+                                  th:if="${reg.status != 'CANCELLED'}">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        class="inline-flex items-center rounded-full bg-red-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-red-700"
+                                        onclick="return confirm('Confirmer l\'annulation de cette inscription ?')">
+                                    Annuler
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(registrations)}">
+                    <td colspan="8" class="px-6 py-8 text-center text-slate-400">
+                        Aucune inscription —
+                        <a th:href="@{/parent/activites}" class="font-semibold text-blue-600 hover:underline">
+                            Voir les activités disponibles
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script>
+    function filtrer() {
+        const val = document.getElementById('statutFilter').value.toLowerCase();
+        document.querySelectorAll('#regTable tbody tr').forEach(row => {
+            row.style.display = val === '' || row.textContent.toLowerCase().includes(val) ? '' : 'none';
+        });
+    }
+</script>
+</body>
+</html>

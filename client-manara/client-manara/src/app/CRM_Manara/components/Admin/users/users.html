@@ -1,0 +1,457 @@
+<app-header-acceuil></app-header-acceuil>
+
+<div class="flex min-h-screen overflow-auto bg-slate-100 dark:bg-slate-900 transition-colors duration-200">
+
+  <app-sidebar-admin [activePage]="'users'"></app-sidebar-admin>
+
+  <main class="flex-1">
+
+    <!-- HEADER -->
+    <section class="border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+      <div class="px-8 py-8 lg:px-12">
+
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+
+          <div>
+            <div class="mb-3 flex items-center gap-2 text-sm font-medium text-slate-400">
+              <span>Admin</span>
+              <span>›</span>
+              <span class="text-slate-600 dark:text-slate-300">Utilisateurs</span>
+            </div>
+
+            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Gestion des utilisateurs
+            </h1>
+
+            <p class="mt-3 max-w-2xl text-base leading-7 text-slate-500 dark:text-slate-400">
+              Gérez les comptes parents, animateurs et administrateurs du centre.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            (click)="openAddModal()"
+            class="rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-700"
+          >
+            + Animateur / Admin
+          </button>
+
+        </div>
+
+      </div>
+    </section>
+
+    <section class="px-8 py-8 pb-16 lg:px-12">
+
+      <!-- ALERTES -->
+      <div
+        *ngIf="succes"
+        class="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-700 shadow-sm"
+      >
+        {{ succes }}
+      </div>
+
+      <div
+        *ngIf="erreur"
+        class="mb-5 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700 shadow-sm"
+      >
+        {{ erreur }}
+      </div>
+
+      <!-- FILTRES -->
+      <div class="mb-6 grid gap-4 rounded-[2rem] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-xl shadow-slate-200/60 md:grid-cols-3">
+
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="filtrer()"
+          placeholder="Rechercher par nom ou courriel..."
+          class="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
+        />
+
+        <select
+          [(ngModel)]="roleFilter"
+          (change)="filtrer()"
+          class="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
+        >
+          <option value="">Tous les rôles</option>
+          <option value="PARENT">PARENT</option>
+          <option value="ANIMATEUR">ANIMATEUR</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+
+        <select
+          [(ngModel)]="statutFilter"
+          (change)="filtrer()"
+          class="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
+        >
+          <option value="">Tous les statuts</option>
+          <option value="Actif">Actif</option>
+          <option value="Inactif">Inactif</option>
+        </select>
+
+      </div>
+
+      <!-- TABLE -->
+      <div class="overflow-hidden rounded-[2rem] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xl shadow-slate-200/70">
+
+        <div class="border-b border-slate-100 dark:border-slate-700 px-6 py-5">
+          <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">
+            Liste des utilisateurs
+          </h2>
+
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Consultez et gérez les utilisateurs enregistrés.
+          </p>
+        </div>
+
+        <div class="overflow-x-auto">
+
+          <table class="min-w-full text-sm">
+
+            <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400">
+              <tr>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Nom</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Courriel</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Téléphone</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Rôle</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Statut</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Créé le</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
+
+              <tr
+                *ngFor="let user of filteredUsers"
+                class="transition hover:bg-emerald-50/40 dark:hover:bg-slate-700/40"
+              >
+
+                <td class="px-6 py-5 font-extrabold text-slate-900 dark:text-white">
+                  {{ user.firstName }} {{ user.lastName }}
+                </td>
+
+                <td class="px-6 py-5">
+                  {{ user.email }}
+                </td>
+
+                <td class="px-6 py-5">
+                  {{ user.phone || '—' }}
+                </td>
+
+                <td class="px-6 py-5">
+                  <span
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-extrabold"
+                    [ngClass]="{
+                      'bg-sky-100 text-sky-700': user.role === 'PARENT',
+                      'bg-blue-100 text-blue-700': user.role === 'ANIMATEUR',
+                      'bg-amber-100 text-amber-700': user.role === 'ADMIN'
+                    }"
+                  >
+                    {{ user.role }}
+                  </span>
+                </td>
+
+                <td class="px-6 py-5">
+                  <span
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-extrabold"
+                    [ngClass]="user.active
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-red-100 text-red-700'"
+                  >
+                    {{ user.active ? 'Actif' : 'Inactif' }}
+                  </span>
+                </td>
+
+                <td class="px-6 py-5 font-semibold">
+                  {{ user.createdAt | date:'d MMM yyyy' }}
+                </td>
+
+                <td class="px-6 py-5">
+
+                  <div class="flex flex-wrap items-center gap-2">
+
+                    <button
+                      type="button"
+                      (click)="openEditModal(user)"
+                      class="rounded-full bg-slate-100 px-4 py-2 text-xs font-extrabold text-slate-700 transition hover:bg-slate-200"
+                    >
+                      Modifier
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="toggleUser(user)"
+                      class="rounded-full px-4 py-2 text-xs font-extrabold transition"
+                      [ngClass]="user.active
+                        ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'"
+                    >
+                      {{ user.active ? 'Désactiver' : 'Réactiver' }}
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="openDeleteModal(user)"
+                      class="rounded-full bg-red-50 px-4 py-2 text-xs font-extrabold text-red-600 transition hover:bg-red-100"
+                    >
+                      Supprimer
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+              <tr *ngIf="filteredUsers.length === 0">
+                <td colspan="7" class="px-6 py-12 text-center">
+
+                  <p class="text-lg font-extrabold text-slate-500">
+                    Aucun utilisateur trouvé
+                  </p>
+
+                  <p class="mt-1 text-sm text-slate-400">
+                    Essayez de modifier vos filtres.
+                  </p>
+
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<!-- MODALE AJOUT / MODIFICATION -->
+<div
+  *ngIf="modalOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 px-4 backdrop-blur-sm"
+>
+  <div class="w-full max-w-2xl overflow-hidden rounded-[2rem] bg-white dark:bg-slate-800 shadow-2xl">
+
+    <!-- HEADER MODAL -->
+    <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 px-6 py-6 text-white">
+
+      <div class="flex items-center justify-between">
+
+        <div>
+          <h2 class="text-2xl font-extrabold">
+            {{ isEditMode ? 'Modifier utilisateur' : 'Ajouter utilisateur' }}
+          </h2>
+
+          <p class="mt-1 text-sm text-emerald-50">
+            Configurez les informations du compte utilisateur.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="rounded-full bg-white/15 px-3 py-2 text-xl font-bold text-white transition hover:bg-white/25"
+        >
+          ×
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- FORM -->
+    <form class="grid gap-4 p-6 md:grid-cols-2" (ngSubmit)="saveUser()">
+
+      <div>
+        <label class="mb-2 block text-sm font-extrabold text-slate-700 dark:text-slate-200">
+          Prénom
+        </label>
+
+        <input
+          type="text"
+          [(ngModel)]="formUser.firstName"
+          name="firstName"
+          required
+          placeholder="Prénom"
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+        />
+      </div>
+
+      <div>
+        <label class="mb-2 block text-sm font-extrabold text-slate-700 dark:text-slate-200">
+          Nom
+        </label>
+
+        <input
+          type="text"
+          [(ngModel)]="formUser.lastName"
+          name="lastName"
+          required
+          placeholder="Nom de famille"
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+        />
+      </div>
+
+      <div>
+        <label class="mb-2 block text-sm font-extrabold text-slate-700 dark:text-slate-200">
+          Courriel
+        </label>
+
+        <input
+          type="email"
+          [(ngModel)]="formUser.email"
+          name="email"
+          required
+          placeholder="email@exemple.com"
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+        />
+      </div>
+
+      <div>
+        <label class="mb-2 block text-sm font-extrabold text-slate-700 dark:text-slate-200">
+          Téléphone
+        </label>
+
+        <input
+          type="text"
+          [(ngModel)]="formUser.phone"
+          name="phone"
+          placeholder="514-000-0000"
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+        />
+      </div>
+
+      <div>
+        <label class="mb-2 block text-sm font-extrabold text-slate-700 dark:text-slate-200">
+          Rôle
+        </label>
+
+        <select
+          [(ngModel)]="formUser.role"
+          name="role"
+          required
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+        >
+          <option value="ANIMATEUR">ANIMATEUR</option>
+          <option value="ADMIN">ADMIN</option>
+          <option value="PARENT">PARENT</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="mb-2 block text-sm font-extrabold text-slate-700 dark:text-slate-200">
+          Mot de passe
+        </label>
+
+        <input
+          type="password"
+          [(ngModel)]="formUser.password"
+          name="password"
+          required
+          placeholder="••••••••"
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+        />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="mb-2 block text-sm font-extrabold text-slate-700 dark:text-slate-200">
+          Statut
+        </label>
+
+        <select
+          [(ngModel)]="formUser.active"
+          name="active"
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+        >
+          <option [ngValue]="true">Actif</option>
+          <option [ngValue]="false">Inactif</option>
+        </select>
+      </div>
+
+      <div class="mt-4 flex justify-end gap-3 md:col-span-2">
+
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="rounded-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-5 py-3 text-sm font-extrabold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-600"
+        >
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          class="rounded-full bg-emerald-600 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-700"
+        >
+          {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<!-- MODALE SUPPRESSION -->
+<div
+  *ngIf="deleteModalOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 px-4 backdrop-blur-sm"
+>
+  <div class="w-full max-w-md rounded-[2rem] bg-white dark:bg-slate-800 p-6 shadow-2xl">
+
+    <div class="mb-4 flex items-center gap-3">
+
+      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100">
+        <span class="text-xl">🗑️</span>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">
+          Confirmer suppression
+        </h2>
+
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          Cette action est irréversible.
+        </p>
+      </div>
+
+    </div>
+
+    <p class="mb-6 text-slate-600 dark:text-slate-300">
+      Supprimer
+      <span class="font-extrabold text-slate-900 dark:text-white">
+        {{ userToDelete?.firstName }} {{ userToDelete?.lastName }}
+      </span>
+      ?
+    </p>
+
+    <div class="flex justify-end gap-3">
+
+      <button
+        (click)="deleteModalOpen = false"
+        class="rounded-full border border-slate-300 dark:border-slate-600 px-5 py-3 text-sm font-extrabold text-slate-700 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-700"
+      >
+        Annuler
+      </button>
+
+      <button
+        (click)="confirmDelete()"
+        class="rounded-full bg-red-600 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-red-700"
+      >
+        Supprimer
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<app-footer-acceuil></app-footer-acceuil>

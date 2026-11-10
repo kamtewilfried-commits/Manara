@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${title}">Calendrier des activités</title>
+
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+
+    <style>
+        .calendar-day {
+            min-height: 130px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+<div th:replace="fragments/headerPlanning:: header"></div>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+        <!-- Calendrier -->
+        <div class="xl:col-span-2">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-2">
+                        <button id="prevMonth" type="button"
+                                class="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 transition">
+                            ←
+                        </button>
+
+                        <button id="nextMonth" type="button"
+                                class="inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 transition">
+                            →
+                        </button>
+
+                        <button id="todayBtn" type="button"
+                                class="ml-1 px-4 py-2 rounded-xl bg-slate-900 text-white font-medium hover:bg-slate-700 transition">
+                            Aujourd’hui
+                        </button>
+                    </div>
+
+                    <h1 id="calendarTitle" class="text-2xl font-bold tracking-tight text-slate-900">
+                        Calendrier
+                    </h1>
+                </div>
+
+                <div class="grid grid-cols-7 gap-2 mb-2 text-sm font-semibold text-slate-500">
+                    <div class="text-center py-3 bg-slate-100 rounded-xl">Lun</div>
+                    <div class="text-center py-3 bg-slate-100 rounded-xl">Mar</div>
+                    <div class="text-center py-3 bg-slate-100 rounded-xl">Mer</div>
+                    <div class="text-center py-3 bg-slate-100 rounded-xl">Jeu</div>
+                    <div class="text-center py-3 bg-slate-100 rounded-xl">Ven</div>
+                    <div class="text-center py-3 bg-slate-100 rounded-xl">Sam</div>
+                    <div class="text-center py-3 bg-slate-100 rounded-xl">Dim</div>
+                </div>
+
+                <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
+            </div>
+        </div>
+
+        <!-- Panneau latéral -->
+        <aside>
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 sm:p-6 h-full">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-slate-900">Sessions du jour</h2>
+                    <a th:href="@{/templates/Admin/sessions/new}"
+                       class="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 transition">
+                        Ajouter
+                    </a>
+                </div>
+
+                <p id="selectedDateLabel" class="text-sm text-slate-500 mb-4">
+                    Sélectionnez une date
+                </p>
+
+                <div id="selectedDayEvents" class="space-y-3">
+                    <p class="text-slate-400 italic">Aucun jour sélectionné.</p>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    <!-- Tableau -->
+    <section class="mt-8">
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-5 sm:p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-xl font-bold text-slate-900">Liste des sessions</h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-separate border-spacing-y-2">
+                    <thead>
+                    <tr class="text-left text-sm text-slate-500">
+                        <th class="px-4 py-2 font-semibold">Activité</th>
+                        <th class="px-4 py-2 font-semibold">Début</th>
+                        <th class="px-4 py-2 font-semibold">Fin</th>
+                        <th class="px-4 py-2 font-semibold">Capacité</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="s : ${sessions}" class="bg-slate-50">
+                        <td class="px-4 py-3 rounded-l-2xl font-medium text-slate-800"
+                            th:text="${s.activity.name}">Cours de soutien</td>
+                        <td class="px-4 py-3 text-slate-600"
+                            th:text="${#temporals.format(s.startDate, 'yyyy-MM-dd HH:mm')}">2026-04-02 18:00</td>
+                        <td class="px-4 py-3 text-slate-600"
+                            th:text="${#temporals.format(s.endDate, 'yyyy-MM-dd HH:mm')}">2026-04-02 20:00</td>
+                        <td class="px-4 py-3 rounded-r-2xl text-slate-600"
+                            th:text="${s.capacity}">20</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="fragments/footerAcceuil :: Foot"></div>
+
+<script>
+    let sessionsFromServer = [];
+
+</script>
+<script>
+    const calendarTitle = document.getElementById("calendarTitle");
+    const calendarGrid = document.getElementById("calendarGrid");
+    const selectedDateLabel = document.getElementById("selectedDateLabel");
+    const selectedDayEvents = document.getElementById("selectedDayEvents");
+
+    const prevMonthBtn = document.getElementById("prevMonth");
+    const nextMonthBtn = document.getElementById("nextMonth");
+    const todayBtn = document.getElementById("todayBtn");
+
+    let currentDate = new Date();
+    let selectedDate = null;
+
+    const monthNames = [
+        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+    ];
+
+    function pad(n) {
+        return String(n).padStart(2, "0");
+    }
+
+    function formatDateToYMD(date) {
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
+    function formatHour(dateString) {
+        const d = new Date(dateString);
+        return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function formatDisplayDate(dateString) {
+        const d = new Date(dateString + "T00:00:00");
+        return d.toLocaleDateString("fr-CA", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+    }
+
+    function getSessionsByDate(dateString) {
+        return sessionsFromServer
+            .filter(s => s.start.substring(0, 10) === dateString)
+            .sort((a, b) => new Date(a.start) - new Date(b.start));
+    }
+    async function loadSessions() {
+        try {
+            const response = await fetch("/api/sessions");
+            if (!response.ok) {
+                throw new Error("Erreur lors du chargement des sessions");
+            }
+
+            sessionsFromServer = await response.json();
+            renderCalendar();
+
+            if (selectedDate) {
+                renderSelectedDay(selectedDate);
+            } else {
+                const today = formatDateToYMD(new Date());
+                renderSelectedDay(today);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    function renderSelectedDay(dateString) {
+        selectedDate = dateString;
+        const daySessions = getSessionsByDate(dateString);
+
+        selectedDateLabel.textContent = formatDisplayDate(dateString);
+
+        if (daySessions.length === 0) {
+            selectedDayEvents.innerHTML = `
+                <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+                    <p class="text-slate-500 italic mb-3">Aucune session prévue pour cette date.</p>
+                    <a href="/admin/sessions/new?date=${dateString}"
+                       class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition">
+                        Ajouter une session
+                    </a>
+                </div>
+            `;
+            return;
+        }
+
+        let html = "";
+        daySessions.forEach(s => {
+            html += `
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                    <div class="flex items-start justify-between gap-3 mb-2">
+                        <h3 class="text-base font-semibold text-slate-900">${s.title}</h3>
+                        <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+                            ${formatHour(s.start)} - ${formatHour(s.end)}
+                        </span>
+                    </div>
+
+                    <div class="space-y-1 text-sm text-slate-600">
+                        <p><span class="font-medium text-slate-800">Capacité :</span> ${s.capacity}</p>
+                        <p><span class="font-medium text-slate-800">Description :</span> ${s.description ?? "Aucune description"}</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="/admin/sessions/edit/${s.id}"
+                           class="inline-flex items-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 transition">
+                            Modifier
+                        </a>
+                    </div>
+                </div>
+            `;
+        });
+
+        selectedDayEvents.innerHTML = html;
+    }
+
+    function renderCalendar() {
+        calendarGrid.innerHTML = "";
+
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        calendarTitle.textContent = `${monthNames[month]} ${year}`;
+
+        const firstDayOfMonth = new Date(year, month, 1);
+        const lastDayOfMonth = new Date(year, month + 1, 0);
+
+        let startWeekDay = firstDayOfMonth.getDay();
+        startWeekDay = startWeekDay === 0 ? 6 : startWeekDay - 1;
+
+        const daysInMonth = lastDayOfMonth.getDate();
+        const prevMonthLastDate = new Date(year, month, 0).getDate();
+
+        for (let i = startWeekDay; i > 0; i--) {
+            const cell = document.createElement("div");
+            cell.className = "calendar-day rounded-2xl bg-slate-100 border border-slate-200 p-2 text-slate-400";
+            cell.innerHTML = `<div class="font-semibold">${prevMonthLastDate - i + 1}</div>`;
+            calendarGrid.appendChild(cell);
+        }
+
+        const todayString = formatDateToYMD(new Date());
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateObj = new Date(year, month, day);
+            const dateString = formatDateToYMD(dateObj);
+            const daySessions = getSessionsByDate(dateString);
+
+            const cell = document.createElement("div");
+
+            let cellClasses = "calendar-day rounded-2xl border p-2 transition cursor-pointer bg-white border-slate-200 hover:shadow-md hover:-translate-y-0.5";
+            if (daySessions.length > 0) {
+                cellClasses += " bg-blue-50 border-blue-200";
+            }
+            if (dateString === todayString) {
+                cellClasses += " ring-2 ring-slate-900";
+            }
+            if (dateString === selectedDate) {
+                cellClasses += " bg-blue-100 border-blue-400";
+            }
+
+            cell.className = cellClasses;
+
+            let eventsHtml = "";
+            const maxVisible = 2;
+
+            daySessions.slice(0, maxVisible).forEach(s => {
+                eventsHtml += `
+                   <div class="mb-1 rounded-lg bg-blue-600 px-2 py-1 text-[11px] font-medium text-white truncate">
+            ${s.title}
+        </div>
+    `;
+            });
+
+            if (daySessions.length > maxVisible) {
+                eventsHtml += `
+                   <div class="rounded-lg bg-blue-100 px-2 py-1 text-[11px] text-blue-700">
+            +${daySessions.length - maxVisible} autre(s)
+        </div>
+    `;
+            }
+
+            cell.innerHTML = `
+                <div class="mb-2 text-sm font-bold text-slate-900">${day}</div>
+                <div>${eventsHtml}</div>
+            `;
+
+            cell.addEventListener("click", () => {
+                renderSelectedDay(dateString);
+                renderCalendar();
+            });
+
+            calendarGrid.appendChild(cell);
+        }
+
+        const totalCells = calendarGrid.children.length;
+        const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+
+        for (let i = 1; i <= remaining; i++) {
+            const cell = document.createElement("div");
+            cell.className = "calendar-day rounded-2xl bg-slate-100 border border-slate-200 p-2 text-slate-400";
+            cell.innerHTML = `<div class="font-semibold">${i}</div>`;
+            calendarGrid.appendChild(cell);
+        }
+    }
+
+    prevMonthBtn.addEventListener("click", () => {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+        renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        renderCalendar();
+    });
+
+    todayBtn.addEventListener("click", () => {
+        currentDate = new Date();
+        const today = formatDateToYMD(new Date());
+        renderSelectedDay(today);
+        renderCalendar();
+    });
+    console.log(sessionsFromServer);
+    console.log(getSessionsByDate("2026-03-01"));
+    const today = formatDateToYMD(new Date());
+    selectedDate = today;
+    loadSessions();
+</script>
+</body>
+</html>

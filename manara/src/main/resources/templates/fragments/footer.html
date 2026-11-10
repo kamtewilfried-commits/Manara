@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<footer th:fragment="footer" class="footer">
+
+    <div style="display:flex; align-items:center; gap:10px;">
+        <img th:src="@{/image/logo.png}" alt="Logo CRM Manara"
+             style="width:24px; height:24px; object-fit:contain; opacity:0.6;">
+        <p>© 2026 CRM Manara — Centre communautaire Manara, Montréal QC</p>
+    </div>
+
+    <div style="display:flex; gap:20px;">
+        <a th:href="@{/contact}"
+           style="font-size:11px; color:var(--color-text-muted); text-decoration:none;">
+            Contact
+        </a>
+        <a th:href="@{/apropos}"
+           style="font-size:11px; color:var(--color-text-muted); text-decoration:none;">
+            À propos
+        </a>
+        <span style="font-size:11px; color:var(--color-text-muted);">
+            info@manara.ca · 514-555-0000
+        </span>
+    </div>
+
+</footer>
+
+</body>
+</html>

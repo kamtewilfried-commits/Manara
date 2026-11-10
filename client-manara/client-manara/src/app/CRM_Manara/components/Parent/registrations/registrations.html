@@ -1,0 +1,137 @@
+<div class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors duration-200">
+
+  <app-header-parent [connectedUser]="connectedUser"></app-header-parent>
+
+  <div class="flex">
+    <app-sidebar-parent
+      [activePage]="'registrations'"
+      [connectedUser]="connectedUser"
+      [unreadNotifications]="unreadNotifications">
+    </app-sidebar-parent>
+
+    <main class="flex-1 p-8 ml-72 pt-20">
+
+<div class="mb-6">
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+        Mes inscriptions
+      </h1>
+      <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+        Historique de toutes les inscriptions de vos enfants
+      </p>
+    </div>
+
+    <div class="mb-6 flex flex-wrap gap-4">
+      <div class="rounded-2xl bg-white dark:bg-slate-800 px-5 py-4 shadow-sm border border-slate-200 dark:border-slate-700">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Inscriptions actives</p>
+        <p class="text-2xl font-bold text-emerald-600">{{ activeCount }}</p>
+      </div>
+      <div class="rounded-2xl bg-white dark:bg-slate-800 px-5 py-4 shadow-sm border border-slate-200 dark:border-slate-700">
+        <p class="text-sm text-slate-500 dark:text-slate-400">En attente</p>
+        <p class="text-2xl font-bold text-amber-600">{{ pendingCount }}</p>
+      </div>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="erreur"
+         class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+      {{ erreur }}
+    </div>
+
+    <!-- Message de succès -->
+    <div *ngIf="succes"
+         class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+      {{ succes }}
+    </div>
+
+    <div class="overflow-x-auto rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Enfant</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Activité</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Date session</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Lieu</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Statut</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Liste d'attente</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Présence</th>
+            <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-slate-200 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
+          <tr *ngFor="let reg of registrations" class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
+
+            <td class="px-6 py-4 font-semibold">
+              {{ reg.childFullName }}
+            </td>
+
+            <td class="px-6 py-4">
+              Session #{{ reg.sessionId }}
+            </td>
+
+            <td class="px-6 py-4">
+              {{ reg.sessionStartDate| date:'d MMM yyyy HH:mm' }}
+            </td>
+
+            <td class="px-6 py-4">
+              {{ reg.sessionLocation }}
+            </td>
+
+            <td class="px-6 py-4">
+              <span
+                class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                [ngClass]="{
+                  'bg-emerald-50 text-emerald-700': reg.status === 'CONFIRMED',
+                  'bg-amber-50 text-amber-700':     reg.status === 'PENDING',
+                  'bg-red-50 text-red-700':         reg.status === 'CANCELLED'
+                }">
+                {{ reg.status === 'CONFIRMED'|| reg.status === 'PENDING_PAYMENT'  ? 'Confirmée'  :
+                   reg.status === 'PENDING'   ? 'En attente' :
+                   reg.status === 'CANCELLED' ? 'Annulée'    : reg.status }}
+              </span>
+            </td>
+
+            <td class="px-6 py-4">
+              <span *ngIf="reg.waitlist; else notWaitlist"
+                    class="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
+                Oui
+              </span>
+              <ng-template #notWaitlist>
+                <span class="text-slate-400">Non</span>
+              </ng-template>
+            </td>
+
+            <td class="px-6 py-4">
+              <span [ngClass]="reg.present ? 'text-emerald-600 font-semibold' : 'text-slate-400'">
+                {{ reg.present ? 'Présent' : 'Absent' }}
+              </span>
+            </td>
+
+            <td class="px-6 py-4">
+             <button
+  *ngIf="reg.status === 'CONFIRMED'"
+  type="button"
+  (click)="cancelRegistration(reg.id)"
+  [disabled]="loading"
+  class="inline-flex items-center rounded-full bg-red-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+  Annuler
+</button>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="registrations.length === 0">
+            <td colspan="8" class="px-6 py-8 text-center text-slate-400">
+              Aucune inscription trouvée.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    </main>
+  </div>
+
+</div>
+
+    

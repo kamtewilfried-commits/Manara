@@ -1,0 +1,149 @@
+<div class="min-h-screen bg-slate-100">
+  <app-header-animateur [connectedUser]="connectedUser"></app-header-animateur>
+
+  <div class="flex min-h-screen bg-slate-100">
+    <app-sidebar-animateur
+      [activePage]="'presence'"
+      [connectedUser]="connectedUser">
+    </app-sidebar-animateur>
+
+    <main class="flex-1 p-8">
+      <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Feuille de présence</h1>
+          <p class="mt-1 text-sm font-medium text-slate-500">
+            {{ session?.activityName || 'Session du jour' }} — {{ session?.startDate | date:'EEEE d MMMM yyyy' }}
+            · {{ session?.startDate | date:'HH:mm' }}
+            · {{ session?.location }}
+          </p>
+        </div>
+
+        <a
+          [routerLink]="['/animateur/sessions']"
+          class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+        >
+          ← Retour
+        </a>
+      </div>
+
+      <div *ngIf="succes"
+           class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        {{ succes }}
+      </div>
+      <div *ngIf="erreur"
+           class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+        {{ erreur }}
+      </div>
+      <div *ngIf="loading"
+           class="mb-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600">
+        Chargement des données...
+      </div>
+      <div *ngIf="!loading && !session"
+           class="mb-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600">
+        Aucune session en cours aujourd'hui.
+      </div>
+
+      <!-- Résumé session -->
+      <div class="mb-6 flex flex-wrap gap-3 rounded-3xl border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
+        <span class="rounded-full bg-slate-50 px-4 py-2 font-semibold">
+          Inscrits : {{ registrations.length }} / {{ session?.capacity || 0 }}
+        </span>
+
+        <span class="rounded-full bg-blue-50 px-4 py-2 font-semibold text-blue-700">
+          {{ getNombrePresents() }} présent(s)
+        </span>
+      </div>
+
+      <form (ngSubmit)="enregistrerPresences()">
+        <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <!-- En-tête -->
+          <div class="grid grid-cols-3 gap-4 border-b border-slate-200 bg-slate-50 px-6 py-4 text-sm font-extrabold uppercase tracking-wide text-slate-500">
+            <span>Enfant</span>
+            <span class="text-center">Allergies</span>
+            <span class="text-center">Présent</span>
+          </div>
+
+          <!-- Lignes -->
+          <div
+            *ngFor="let reg of registrations"
+            class="grid grid-cols-3 items-center gap-4 border-b border-slate-100 px-6 py-4"
+            [ngClass]="{
+              'bg-amber-50/40': reg.childAllergies && reg.childAllergies.trim() !== ''
+            }"
+          >
+            <!-- Enfant -->
+            <div>
+              <div class="font-semibold text-slate-900">
+                {{ reg.childFirstName }} {{ reg.childLastName }}
+              </div>
+              <div class="text-sm text-slate-500">
+                {{ reg.parentFullName || 'Parent' }}
+                <span *ngIf="reg.parentPhone">
+                  · {{ reg.parentPhone }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Allergies -->
+            <div class="text-center">
+              <span
+                *ngIf="reg.childAllergies && reg.childAllergies.trim() !== ''"
+                class="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800"
+              >
+                {{ reg.childAllergies }}
+              </span>
+
+              <span
+                *ngIf="!reg.childAllergies || reg.childAllergies.trim() === ''"
+                class="text-sm text-slate-400"
+              >
+                —
+              </span>
+            </div>
+
+            <!-- Présence -->
+            <div class="flex justify-center">
+              <input
+                type="checkbox"
+                [(ngModel)]="reg.present"
+                [name]="'presence_' + reg.childId"
+                class="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="flex items-center justify-between px-6 py-4 text-sm">
+            <span class="text-slate-400">Cochez les enfants présents</span>
+            <span class="font-semibold text-blue-700">
+              {{ getNombrePresents() }} présent(s)
+            </span>
+          </div>
+        </div>
+
+        <!-- Aucun inscrit -->
+        <div *ngIf="registrations.length === 0"
+             class="mt-4 rounded-3xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-400 shadow-sm">
+          Aucun enfant inscrit à cette session.
+        </div>
+
+        <!-- Actions -->
+        <div *ngIf="registrations.length > 0" class="mt-4 flex gap-3">
+          <button
+            type="submit"
+            class="rounded-full bg-blue-700 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-800"
+          >
+            Enregistrer les présences
+          </button>
+
+          <a
+            [routerLink]="['/animateur/sessions']"
+            class="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+          >
+            Annuler
+          </a>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>

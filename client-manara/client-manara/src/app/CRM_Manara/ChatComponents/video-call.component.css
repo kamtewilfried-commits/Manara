@@ -1,0 +1,75 @@
+/* BARRE D’APPEL */
+.call-bar {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 10px;
+  background: #0f172a; /* dark */
+  border-bottom: 1px solid #1e293b;
+}
+
+.call-bar button {
+  padding: 10px 18px;
+  border-radius: 25px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Bouton appel */
+.call-bar button:first-child {
+  background: #22c55e;
+  color: white;
+}
+
+.call-bar button:first-child:hover {
+  background: #16a34a;
+}
+
+/* Bouton quitter */
+.call-bar button:last-child {
+  background: #ef4444;
+  color: white;
+}
+
+.call-bar button:last-child:hover {
+  background: #dc2626;
+}
+
+#video-area {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 100px);
+  background: #020617;
+}
+
+/* écran principal */
+.screen-main {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* barre caméra en bas */
+.camera-bar {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 2;
+}
+
+/* petites vidéos */
+.local-small,
+.remote-small {
+  width: 150px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #22c55e;
+}

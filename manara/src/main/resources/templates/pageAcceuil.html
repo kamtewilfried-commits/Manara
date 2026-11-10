@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="fr"  xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Acceuil</title>
+  <link rel="stylesheet" th:href="@{css/styles.css}" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+<!-- Header -->
+  <div th:replace="fragments/headerAcceuil :: navBar"></div>
+
+  <!-- Main -->
+  <main class="container main" id="liste">
+    <!-- Filter / search -->
+    <section class="filters" aria-label="Filtres">
+      <div class="filters__row">
+        <div class="field">
+          <label for="q">Rechercher</label>
+          <input id="q" type="search" placeholder="Ex.: yoga, danse, tricot…" />
+        </div>
+
+        <div class="field">
+          <label for="cat">Catégorie</label>
+          <select id="cat">
+            <option value="">Toutes</option>
+            <option>Bien-être</option>
+            <option>Sports</option>
+            <option>Culture</option>
+            <option>Famille</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="jour">Jour</label>
+          <select id="jour">
+            <option value="">Tous</option>
+            <option>Lundi</option>
+            <option>Mardi</option>
+            <option>Mercredi</option>
+            <option>Jeudi</option>
+            <option>Vendredi</option>
+            <option>Samedi</option>
+            <option>Dimanche</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="tri">Trier</label>
+          <select id="tri">
+            <option>Prochain début</option>
+            <option>Prix (croissant)</option>
+            <option>Prix (décroissant)</option>
+          </select>
+        </div>
+
+        <button class="btn btn--primary filters__btn" type="button">Appliquer</button>
+      </div>
+
+      <div class="filters__chips" aria-label="Filtres rapides">
+        <button class="chip" type="button">Enfants</button>
+        <button class="chip" type="button">Aînés</button>
+        <button class="chip" type="button">Gratuit</button>
+        <button class="chip" type="button">Nouveauté</button>
+      </div>
+    </section>
+
+    <!-- Grid -->
+     <!-- Carousel -->
+<section class="carousel" aria-label="Galerie">
+  <div class="carousel__viewport" id="ccspCarousel" tabindex="0">
+    <article class="carousel__slide" id="slide-1" aria-label="Slide 1">
+      <img src="https://picsum.photos/id/1011/1200/700" alt="Activité 1" />
+    </article>
+
+    <article class="carousel__slide" id="slide-2" aria-label="Slide 2">
+      <img src="https://picsum.photos/id/1015/1200/700" alt="Activité 2" />
+    </article>
+
+    <article class="carousel__slide" id="slide-3" aria-label="Slide 3">
+      <img src="https://picsum.photos/id/1016/1200/700" alt="Activité 3" />
+    </article>
+
+    <article class="carousel__slide" id="slide-4" aria-label="Slide 4">
+      <img src="https://picsum.photos/id/1025/1200/700" alt="Activité 4" />
+    </article>
+  </div>
+
+  <button class="carousel__btn carousel__btn--prev" type="button" aria-label="Précédent">
+    ‹
+  </button>
+  <button class="carousel__btn carousel__btn--next" type="button" aria-label="Suivant">
+    ›
+  </button>
+
+  <div class="carousel__dots" aria-label="Navigation du carrousel">
+    <button class="dot is-active" type="button" aria-label="Aller à la diapo 1" data-go="0"></button>
+    <button class="dot" type="button" aria-label="Aller à la diapo 2" data-go="1"></button>
+    <button class="dot" type="button" aria-label="Aller à la diapo 3" data-go="2"></button>
+    <button class="dot" type="button" aria-label="Aller à la diapo 4" data-go="3"></button>
+  </div>
+</section>
+    <section class="grid" id="evenements" aria-label="Liste des activités">
+      <!-- Card 1 -->
+      <article class="card">
+        <div class="card__media" role="img" aria-label="Photo activité"></div>
+
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="pill">Culture</span>
+            <span class="meta">Débute le 15 sept.</span>
+          </div>
+
+          <h2 class="card__title">Danse créative</h2>
+          <p class="card__desc">
+            Activité ludique pour développer coordination, créativité et confiance à travers le mouvement.
+          </p>
+
+          <dl class="card__details">
+            <div>
+              <dt>Jour</dt>
+              <dd>Lundi · 18 h – 19 h</dd>
+            </div>
+            <div>
+              <dt>Lieu</dt>
+              <dd>Salle Jutras</dd>
+            </div>
+            <div>
+              <dt>Coût</dt>
+              <dd>95 $</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="card__actions">
+          <a class="btn btn--primary btn--full" href="#">Inscrivez-vous</a>
+          <a class="btn btn--ghost btn--full" href="#">Détails</a>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card">
+        <div class="card__media card__media--alt" role="img" aria-label="Photo activité"></div>
+
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="pill pill--green">Bien-être</span>
+            <span class="meta">Session hiver</span>
+          </div>
+
+          <h2 class="card__title">Yoga express</h2>
+          <p class="card__desc">
+            Une séance courte et efficace pour bouger, respirer et relâcher les tensions.
+          </p>
+
+          <dl class="card__details">
+            <div>
+              <dt>Jour</dt>
+              <dd>Mercredi · 12 h 10 – 12 h 40</dd>
+            </div>
+            <div>
+              <dt>Lieu</dt>
+              <dd>Studio 2</dd>
+            </div>
+            <div>
+              <dt>Coût</dt>
+              <dd>—</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="card__actions">
+          <a class="btn btn--primary btn--full" href="#">Inscrivez-vous</a>
+          <a class="btn btn--ghost btn--full" href="#">Détails</a>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card">
+        <div class="card__media card__media--alt2" role="img" aria-label="Photo activité"></div>
+
+        <div class="card__body">
+          <div class="card__meta">
+            <span class="pill pill--amber">Sports</span>
+            <span class="meta">Places limitées</span>
+          </div>
+
+          <h2 class="card__title">Qi Gong</h2>
+          <p class="card__desc">
+            Entraînement doux pour l’équilibre, la mobilité et l’énergie, accessible à tous les niveaux.
+          </p>
+
+          <dl class="card__details">
+            <div>
+              <dt>Jour</dt>
+              <dd>Mardi · 9 h – 10 h</dd>
+            </div>
+            <div>
+              <dt>Lieu</dt>
+              <dd>Salle multi</dd>
+            </div>
+            <div>
+              <dt>Coût</dt>
+              <dd>85 $ + taxes</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="card__actions">
+          <a class="btn btn--primary btn--full" href="#">Inscrivez-vous</a>
+          <a class="btn btn--ghost btn--full" href="#">Détails</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- Info banner -->
+    <section class="banner" aria-label="Information">
+      <div class="banner__icon" aria-hidden="true">i</div>
+      <div class="banner__content">
+        <h3>Besoin d’aide pour choisir?</h3>
+        <p>
+          Contactez-nous pour être orienté vers l’activité qui correspond à votre âge, votre horaire et vos objectifs.
+        </p>
+      </div>
+      <a class="btn btn--soft" href="#">Nous joindre</a>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <div th:replace="fragments/footerAcceuil :: Foot"></div>
+  <script>
+  (function () {
+    const viewport = document.getElementById("ccspCarousel");
+    const slides = Array.from(viewport.children);
+    const prev = document.querySelector(".carousel__btn--prev");
+    const next = document.querySelector(".carousel__btn--next");
+    const dots = Array.from(document.querySelectorAll(".carousel__dots .dot"));
+
+    const goTo = (index) => {
+      const target = slides[index];
+      if (!target) return;
+      target.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+      dots.forEach((d, i) => d.classList.toggle("is-active", i === index));
+      viewport.dataset.index = String(index);
+    };
+
+    const getIndex = () => Number(viewport.dataset.index || "0");
+
+    prev.addEventListener("click", () => goTo(Math.max(0, getIndex() - 1)));
+    next.addEventListener("click", () => goTo(Math.min(slides.length - 1, getIndex() + 1)));
+
+    dots.forEach(d => d.addEventListener("click", () => goTo(Number(d.dataset.go))));
+
+    // Update active dot on scroll end (best-effort)
+    let t;
+    viewport.addEventListener("scroll", () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        const w = viewport.clientWidth;
+        const idx = Math.round(viewport.scrollLeft / w);
+        goTo(Math.max(0, Math.min(slides.length - 1, idx)));
+      }, 80);
+    });
+
+    goTo(0);
+  })();
+</script>
+
+</body>
+</html>

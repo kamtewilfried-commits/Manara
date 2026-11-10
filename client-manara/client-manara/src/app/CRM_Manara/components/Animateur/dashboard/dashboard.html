@@ -1,0 +1,167 @@
+<div class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors duration-200">
+  <app-header-animateur [connectedUser]="connectedUser"></app-header-animateur>
+
+  <div class="flex min-h-screen bg-slate-100 dark:bg-slate-900">
+    <app-sidebar-animateur
+      [activePage]="'dashboard'"
+      [connectedUser]="connectedUser">
+    </app-sidebar-animateur>
+
+    <main class="flex-1 p-8">
+      <div class="mb-6">
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          Tableau de bord
+        </h1>
+        <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+          Bonjour {{ connectedUser?.firstName || 'Animateur' }}, voici vos sessions du jour
+        </p>
+      </div>
+
+      <!-- STATS -->
+      <div class="mb-8 grid gap-4 md:grid-cols-3">
+        <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
+          <div class="text-3xl font-extrabold text-slate-900 dark:text-white">{{ totalActivites }}</div>
+          <div class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">Activités assignées</div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
+          <div class="text-3xl font-extrabold text-slate-900 dark:text-white">{{ sessionsCetteSemaine }}</div>
+          <div class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">Sessions cette semaine</div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
+          <div class="text-3xl font-extrabold text-slate-900 dark:text-white">{{ totalEnfants }}</div>
+          <div class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">Enfants inscrits au total</div>
+        </div>
+      </div>
+
+      <!-- SESSION DU JOUR -->
+      <div *ngIf="sessionDuJour"
+           class="mb-8 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Session en cours aujourd'hui</h2>
+          <span class="inline-flex rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-1 text-xs font-bold text-blue-700 dark:text-blue-300">
+            En cours
+          </span>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">
+            {{ sessionDuJour.activityName || sessionDuJour.activity?.name }}
+          </h3>
+
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {{ sessionDuJour.startDate | date:'EEEE d MMMM yyyy' }}
+            · {{ sessionDuJour.startDate | date:'HH:mm' }}
+            – {{ sessionDuJour.endDate | date:'HH:mm' }}
+            · {{ sessionDuJour.location }}
+          </p>
+        </div>
+
+        <div class="mt-4 grid gap-4 text-sm text-slate-700 dark:text-slate-300 md:grid-cols-3">
+          <div>
+            <strong>{{ sessionDuJour.capacity - sessionDuJour.availableSpots }} / {{ sessionDuJour.capacity }}</strong>
+            inscrits
+          </div>
+
+          <div>
+            <strong>{{ sessionDuJour.location }}</strong>
+            lieu
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-3">
+          <a
+            routerLink="/animateur/presence"
+            class="rounded-full bg-blue-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+          >
+            Prendre les présences
+          </a>
+
+          <a
+            routerLink="/animateur/sessions"
+            class="rounded-full border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-5 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-600"
+          >
+            Voir les inscrits
+          </a>
+        </div>
+      </div>
+
+      <!-- PAS DE SESSION -->
+      <div *ngIf="!sessionDuJour"
+           class="mb-8 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-center text-sm text-slate-400 shadow-sm">
+        Aucune session en cours aujourd'hui.
+      </div>
+
+      <!-- PROCHAINES SESSIONS -->
+      <div class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-6 py-4">
+          <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Prochaines sessions</h2>
+          <a
+            routerLink="/animateur/sessions"
+            class="rounded-full border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-600"
+          >
+            Voir tout
+          </a>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400">
+              <tr>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Activité</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Date</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Heure</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Lieu</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Inscrits</th>
+                <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Statut</th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-700 text-slate-700 dark:text-slate-300">
+              <tr *ngFor="let s of prochainesSessions" class="hover:bg-slate-50 dark:hover:bg-slate-700/40">
+                <td class="px-6 py-4 font-semibold">
+                  {{ s.activityName || s.activity?.name }}
+                </td>
+
+                <td class="px-6 py-4">
+                  {{ s.startDate | date:'EEE d MMM' }}
+                </td>
+
+                <td class="px-6 py-4">
+                  {{ s.startDate | date:'HH:mm' }} – {{ s.endDate | date:'HH:mm' }}
+                </td>
+
+                <td class="px-6 py-4">
+                  {{ s.location }}
+                </td>
+
+                <td class="px-6 py-4">
+                  {{ s.capacity - s.availableSpots }} / {{ s.capacity }}
+                </td>
+
+                <td class="px-6 py-4">
+                  <span
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                    [ngClass]="s.status === 'PLANNED'
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'bg-indigo-50 text-indigo-700'"
+                  >
+                    {{ s.status === 'PLANNED' ? 'Planifiée' : 'En cours' }}
+                  </span>
+                </td>
+              </tr>
+
+              <tr *ngIf="prochainesSessions.length === 0">
+                <td colspan="6" class="px-6 py-8 text-center text-slate-400">
+                  Aucune session à venir
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900">
+  <div class="px-6 lg:px-10">
+    <div class="flex min-h-[76px] items-center justify-between gap-6 py-3">
+
+      <!-- LEFT -->
+      <a routerLink="/" class="flex items-center gap-3">
+        <img
+          src="images/Logo.png"
+          alt="Logo CRM Manara"
+          class="h-11 w-11 rounded-full border border-slate-200 object-cover shadow-sm dark:border-slate-600"
+        />
+
+        <div>
+          <p class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
+            CRM Manara
+          </p>
+          <p class="text-xs font-medium text-slate-500 dark:text-slate-400">
+            Centre d'activités communautaires
+          </p>
+        </div>
+      </a>
+
+      <!-- RIGHT -->
+      <div class="flex items-center gap-3">
+
+        <!-- USER -->
+        <div class="hidden text-right sm:block">
+          <p class="text-sm font-semibold text-slate-800 dark:text-white">
+            Bienvenue,
+            {{
+              connectedUser
+                ? connectedUser.firstName + ' ' + connectedUser.lastName
+                : i18n.t('common.admin')
+            }}
+          </p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            {{ i18n.t('role.admin-sub') }}
+          </p>
+        </div>
+
+        <!-- AVATAR -->
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-sm font-extrabold text-emerald-700 shadow-sm dark:bg-emerald-900/40 dark:text-emerald-300">
+          {{
+            connectedUser?.firstName?.charAt(0) || 'A'
+          }}{{
+            connectedUser?.lastName?.charAt(0) || ''
+          }}
+        </div>
+
+        <!-- LOGOUT -->
+        <button
+          type="button"
+          (click)="logout()"
+          class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600"
+        >
+          {{ i18n.t('btn.logout') }}
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</header>

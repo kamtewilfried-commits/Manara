@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Utilisateurs</title>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body  class="bg-slate-950">
+
+<div th:replace="~{fragments/headerAdmin :: headerAdmin}"></div>
+
+<div class="flex min-h-screen bg-slate-100">
+
+    <div th:replace="~{fragments/sidebarAdmin :: sidebarAdmin('utilisateurs')}"></div>
+
+    <main class="container page">
+        <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Utilisateurs</h1>
+                <p class="mt-1 text-sm font-medium text-slate-500">
+                    Gestion des comptes parents, animateurs et admins
+                </p>
+            </div>
+
+            <a th:href="@{/utilisateurs/nouveau}"
+               class="inline-flex items-center justify-center rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800">
+                + Animateur / Admin
+            </a>
+        </div>
+
+        <div th:if="${succes}"
+             class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"
+             th:text="${succes}"></div>
+
+        <div th:if="${erreur}"
+             class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
+             th:text="${erreur}"></div>
+
+        <!-- Filtres -->
+        <div class="mb-6 grid gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-3">
+            <input type="text"
+                   id="searchInput"
+                   onkeyup="filtrer()"
+                   placeholder="Rechercher par nom ou courriel..."
+                   class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+
+            <select id="roleFilter"
+                    onchange="filtrer()"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+                <option value="">Tous les rôles</option>
+                <option value="PARENT">PARENT</option>
+                <option value="ANIMATEUR">ANIMATEUR</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+
+            <select id="statutFilter"
+                    onchange="filtrer()"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+                <option value="">Tous les statuts</option>
+                <option value="Actif">Actif</option>
+                <option value="Inactif">Inactif</option>
+            </select>
+        </div>
+
+        <div class="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <table class="min-w-full text-sm" id="usersTable">
+                <thead class="bg-slate-50 text-slate-500">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Nom</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Courriel</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Téléphone</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Rôle</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Statut</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Créé le</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-wide">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-200 text-slate-700">
+                <tr th:each="user : ${users}" class="hover:bg-slate-50">
+                    <td class="px-6 py-4 font-semibold"
+                        th:text="${user.firstName} + ' ' + ${user.lastName}">Nom</td>
+
+                    <td class="px-6 py-4"
+                        th:text="${user.email}">Email</td>
+
+                    <td class="px-6 py-4"
+                        th:text="${user.phone != null ? user.phone : '—'}">Téléphone</td>
+
+                    <td class="px-6 py-4">
+                <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                      th:classappend="${user.role == 'PARENT'} ? ' bg-sky-50 text-sky-700' :
+                                      (${user.role == 'ANIMATEUR'} ? ' bg-blue-50 text-blue-700' : ' bg-amber-50 text-amber-700')"
+                      th:text="${user.role}">Rôle</span>
+                    </td>
+
+                    <td class="px-6 py-4">
+                <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                      th:classappend="${user.active} ? ' bg-emerald-50 text-emerald-700' : ' bg-red-50 text-red-700'"
+                      th:text="${user.active} ? 'Actif' : 'Inactif'">Statut</span>
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${#temporals.format(user.createdAt, 'd MMM yyyy')}">Date</td>
+
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <a th:href="@{/utilisateurs/{id}(id=${user.id})}"
+                               class="text-sm font-bold text-blue-700 transition hover:text-blue-800">
+                                Voir
+                            </a>
+
+                            <a th:href="@{/utilisateurs/{id}/modifier(id=${user.id})}"
+                               th:if="${user.role != 'PARENT'}"
+                               class="text-sm font-bold text-slate-700 transition hover:text-slate-900">
+                                Modifier
+                            </a>
+
+                            <form th:action="@{/utilisateurs/{id}/toggle(id=${user.id})}"
+                                  method="post"
+                                  class="inline">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <button type="submit"
+                                        class="text-sm font-bold transition"
+                                        th:classappend="${user.active} ? ' text-red-600 hover:text-red-700' : ' text-emerald-600 hover:text-emerald-700'"
+                                        th:text="${user.active} ? 'Désactiver' : 'Réactiver'">
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(users)}">
+                    <td colspan="7" class="px-6 py-8 text-center text-slate-400">
+                        Aucun utilisateur trouvé
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+<div th:replace="fragments/chat-widget :: chatWidget"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function filtrer() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const role   = document.getElementById('roleFilter').value.toLowerCase();
+        const statut = document.getElementById('statutFilter').value.toLowerCase();
+        document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(search)
+            && text.includes(role)
+            && text.includes(statut) ? '' : 'none';
+        });
+    }
+</script>
+</body>
+</html>

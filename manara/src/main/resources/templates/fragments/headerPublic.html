@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+</head>
+<body>
+
+<header th:fragment="headerPublic" class="header">
+
+    <a th:href="@{/}" class="header-logo">
+        <img th:src="@{/image/logo.png}" alt="Logo CRM Manara" class="header-logo-img">
+        <span class="header-logo-text">CRM Manara</span>
+    </a>
+
+    <nav style="display:flex; gap:20px; align-items:center;">
+        <a th:href="@{/activites}"
+           style="color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none;">
+            Activités
+        </a>
+        <a href="#a-propos"
+           style="color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none;">
+            À propos
+        </a>
+        <a th:href="@{/contact}"
+           style="color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none;">
+            Contact
+        </a>
+    </nav>
+
+    <div style="display:flex; gap:10px;">
+        <a th:href="@{/connexion}" class="btn btn-secondary"
+           style="color:#fff; border-color:rgba(255,255,255,0.5); background:transparent;">
+            Se connecter
+        </a>
+        <a th:href="@{/inscription}" class="btn btn-primary"
+           style="background:#fff; color:var(--color-primary); border-color:#fff;">
+            Créer un compte
+        </a>
+    </div>
+
+</header>
+
+</body>
+</html>

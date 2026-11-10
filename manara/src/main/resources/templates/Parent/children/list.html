@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Mes enfants</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body  class="bg-slate-950">
+
+<div th:replace="~{fragments/headerParent :: headerParent}"></div>
+
+<div class="flex min-h-screen bg-slate-100">
+
+    <div th:replace="~{fragments/sidebarParent :: sidebarParent('enfants')}"></div>
+
+    <main  class="container page">
+
+        <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Mes enfants</h1>
+                <p class="mt-1 text-sm font-medium text-slate-500">
+                    Gérez les profils de vos enfants
+                </p>
+            </div>
+
+            <a th:href="@{/parent/enfants/ajouter}"
+               class="inline-flex items-center justify-center rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800">
+                + Ajouter un enfant
+            </a>
+        </div>
+
+        <div th:if="${succes}"
+             class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"
+             th:text="${succes}"></div>
+
+        <div th:if="${erreur}"
+             class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
+             th:text="${erreur}"></div>
+
+        <!-- Grille enfants -->
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 text-center shadow-sm"
+                 th:each="child : ${children}">
+                <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-100 text-lg font-bold text-indigo-700"
+                     th:text="${#strings.substring(child.firstName,0,1) + #strings.substring(child.lastName,0,1)}">
+                    AB
+                </div>
+
+                <div class="text-lg font-extrabold text-slate-900"
+                     th:text="${child.firstName} + ' ' + ${child.lastName}">
+                    Nom
+                </div>
+
+                <div class="mt-1 text-sm text-slate-500"
+                     th:text="${#temporals.format(child.birthDate, 'd MMM yyyy')}">
+                    Date naissance
+                </div>
+
+                <div class="mt-3 min-h-[24px]">
+            <span th:if="${child.allergies != null and !child.allergies.isEmpty()}"
+                  class="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700"
+                  th:text="${child.allergies}">
+                Allergies
+            </span>
+                </div>
+
+                <div class="mt-5 flex justify-center gap-2">
+                    <a th:href="@{/parent/enfants/{id}/modifier(id=${child.id})}"
+                       class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
+                        Modifier
+                    </a>
+
+                    <a th:href="@{/parent/activites}"
+                       class="inline-flex items-center rounded-full bg-blue-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-800">
+                        Inscrire
+                    </a>
+                </div>
+            </div>
+
+            <!-- Carte ajouter -->
+            <a th:href="@{/parent/enfants/ajouter}"
+               class="flex min-h-[220px] items-center justify-center rounded-3xl border-2 border-dashed border-slate-300 bg-white p-5 text-center text-sm font-bold text-slate-500 shadow-sm transition hover:bg-slate-50">
+                + Ajouter<br>un enfant
+            </a>
+
+        </div>
+
+        <!-- Aucun enfant -->
+        <div th:if="${#lists.isEmpty(children)}"
+             class="mt-6 rounded-3xl border border-slate-200 bg-white px-6 py-10 text-center text-sm text-slate-500 shadow-sm">
+            <p class="mb-4">
+                Vous n'avez pas encore ajouté d'enfant.
+            </p>
+            <a th:href="@{/parent/enfants/ajouter}"
+               class="inline-flex items-center rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-800">
+                + Ajouter mon premier enfant
+            </a>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

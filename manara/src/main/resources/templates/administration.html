@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Administration</title>
+  <link rel="stylesheet" th:href="@{/css/ui.css}">
+</head>
+<body>
+
+<!-- Header -->
+<div th:replace="fragments/headerAdministration :: header"></div>
+<main class="container page">
+  <section class="card" id="activites">
+    <div class="card__head">
+      <h2>Gestion des activités</h2>
+      <button class="btn btn--primary" type="button">+ Nouvelle activité</button>
+    </div>
+
+    <div class="table">
+      <div class="trow thead">
+        <div>Activité</div><div>Catégorie</div><div>Statut</div><div>Actions</div>
+      </div>
+
+      <div class="trow">
+        <div class="strong">Yoga enfants</div>
+        <div>Bien-être</div>
+        <div><span class="tag tag--ok">Actif</span></div>
+        <div class="actions">
+          <button class="btn btn--ghost" type="button">Modifier</button>
+          <button class="btn btn--ghost" type="button">Sessions</button>
+        </div>
+      </div>
+
+      <div class="trow">
+        <div class="strong">Danse créative</div>
+        <div>Culture</div>
+        <div><span class="tag">Brouillon</span></div>
+        <div class="actions">
+          <button class="btn btn--ghost" type="button">Modifier</button>
+          <button class="btn btn--ghost" type="button">Publier</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

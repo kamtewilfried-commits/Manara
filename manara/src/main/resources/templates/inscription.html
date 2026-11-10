@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="fr"  xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Inscription</title>
+  <link rel="stylesheet" th:href="@{/css/inscription.css}" />
+</head>
+<body>
+
+<!-- Header -->
+<div th:replace="fragments/headerInscription :: header"></div>
+<main class="container page">
+  <div class="breadcrumbs">
+    <a href="#">Programmation</a><span>›</span><a href="#">Yoga enfants</a><span>›</span><span>Inscription</span>
+  </div>
+
+  <header class="hero">
+    <div>
+      <h1>Inscription – Yoga enfants</h1>
+      <p class="muted">Choisissez l’enfant, la session et confirmez. Vous verrez le total avant de payer.</p>
+    </div>
+
+    <div class="hero__badge">
+      <div class="hero__label">Places restantes</div>
+      <div class="hero__value">6</div>
+      <div class="hero__sub muted">Mise à jour en temps réel</div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Left -->
+    <section class="stack">
+      <!-- 1) Enfant -->
+      <section class="card">
+        <div class="card__head">
+          <h2>1) Sélection de l’enfant</h2>
+          <span class="hint">Obligatoire</span>
+        </div>
+
+        <div class="kids">
+          <label class="kid">
+            <input type="checkbox" checked />
+            <span class="kid__avatar">A</span>
+            <span class="kid__info">
+              <span class="kid__name">Aïcha</span>
+              <span class="kid__meta muted">8 ans · Allergies: arachides</span>
+            </span>
+          </label>
+
+          <label class="kid">
+            <input type="checkbox" />
+            <span class="kid__avatar kid__avatar--alt">M</span>
+            <span class="kid__info">
+              <span class="kid__name">Mika</span>
+              <span class="kid__meta muted">11 ans · Aucun avis</span>
+            </span>
+          </label>
+
+          <button class="btn btn--ghost btn--full" type="button">+ Ajouter un enfant</button>
+        </div>
+      </section>
+
+      <!-- 2) Session -->
+      <section class="card">
+        <div class="card__head">
+          <h2>2) Choix de la session</h2>
+          <span class="hint">Obligatoire</span>
+        </div>
+
+        <div class="sessions">
+          <label class="option">
+            <input type="radio" name="session" checked />
+            <span class="option__main">
+              <span class="option__title">Session automne</span>
+              <span class="option__sub muted">15 sept → 15 nov · Lun 18:00–19:00 · Salle Jutras</span>
+            </span>
+            <span class="pill pill--blue">95,00 $</span>
+          </label>
+
+          <label class="option">
+            <input type="radio" name="session" />
+            <span class="option__main">
+              <span class="option__title">Session hiver</span>
+              <span class="option__sub muted">10 janv → 20 mars · Lun 18:00–19:00 · Salle Jutras</span>
+            </span>
+            <span class="pill">95,00 $</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 3) Options -->
+      <section class="card">
+        <div class="card__head">
+          <h2>3) Options</h2>
+          <span class="hint">Facultatif</span>
+        </div>
+
+        <div class="formGrid">
+          <label class="check">
+            <input type="checkbox" />
+            <span class="check__box" aria-hidden="true"></span>
+            <span>
+              <span class="strong">T-shirt du club</span>
+              <span class="muted block">+ 15,00 $</span>
+            </span>
+          </label>
+
+          <label class="check">
+            <input type="checkbox" checked />
+            <span class="check__box" aria-hidden="true"></span>
+            <span>
+              <span class="strong">Assurance / frais admin</span>
+              <span class="muted block">+ 5,00 $</span>
+            </span>
+          </label>
+
+          <div class="field">
+            <label for="note">Note au responsable</label>
+            <textarea id="note" rows="3" placeholder="Allergies, informations importantes..."></textarea>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Right -->
+    <aside class="sidebar">
+      <section class="card card--sticky">
+        <div class="card__head">
+          <h2>Résumé</h2>
+          <span class="hint">Avant paiement</span>
+        </div>
+
+        <div class="summary">
+          <div class="sumrow">
+            <span class="muted">Enfant(s)</span>
+            <span class="strong">Aïcha</span>
+          </div>
+          <div class="sumrow">
+            <span class="muted">Session</span>
+            <span class="strong">Automne</span>
+          </div>
+          <hr class="sep" />
+          <div class="sumrow">
+            <span class="muted">Frais activité</span>
+            <span class="strong">95,00 $</span>
+          </div>
+          <div class="sumrow">
+            <span class="muted">Options</span>
+            <span class="strong">5,00 $</span>
+          </div>
+          <div class="sumrow">
+            <span class="muted">Taxes</span>
+            <span class="strong">—</span>
+          </div>
+          <hr class="sep" />
+          <div class="sumrow sumrow--total">
+            <span>Total</span>
+            <span>100,00 $</span>
+          </div>
+
+          <button class="btn btn--primary btn--full" type="button">Confirmer & payer</button>
+          <button class="btn btn--soft btn--full" type="button">Confirmer (payer plus tard)</button>
+
+          <p class="small muted">
+            En confirmant, vous acceptez les politiques d’annulation et de remboursement.
+          </p>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+</body>
+</html>

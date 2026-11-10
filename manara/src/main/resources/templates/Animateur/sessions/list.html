@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Mes sessions</title>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body  class="bg-slate-950">
+
+<div th:replace="~{fragments/headerAnimateur :: headerAnimateur}"></div>
+
+<div class="flex min-h-screen bg-slate-100">
+
+    <div th:replace="~{fragments/sidebarAnimateur :: sidebarAnimateur('sessions')}"></div>
+
+    <main  class="container page">
+
+        <div class="mb-6">
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Mes sessions</h1>
+            <p class="mt-1 text-sm font-medium text-slate-500">
+                Toutes les sessions qui vous sont assignées
+            </p>
+        </div>
+
+        <!-- Filtres -->
+        <div class="mb-6 grid gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-2">
+            <select id="activiteFilter"
+                    onchange="filtrer()"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:ring-4 focus:ring-blue-100 focus:border-blue-300">
+                <option value="">Toutes les activités</option>
+                <option th:each="activity : ${activites}"
+                        th:value="${activity.name}"
+                        th:text="${activity.name}">
+                    Activité
+                </option>
+            </select>
+
+            <select id="statutFilter"
+                    onchange="filtrer()"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:ring-4 focus:ring-blue-100 focus:border-blue-300">
+                <option value="">Tous les statuts</option>
+                <option value="Planifiée">Planifiée</option>
+                <option value="En cours">En cours</option>
+                <option value="Terminée">Terminée</option>
+                <option value="Annulée">Annulée</option>
+            </select>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <table class="min-w-full text-sm" id="sessionsTable">
+
+                <thead class="bg-slate-50 text-slate-500">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Activité</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Date</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Heure</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Lieu</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Inscrits</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Statut</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-200 text-slate-700">
+                <tr th:each="session : ${sessions}" class="hover:bg-slate-50">
+
+                    <td class="px-6 py-4 font-semibold"
+                        th:text="${session.activity.name}">
+                        Activité
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${#temporals.format(session.startDate, 'EEE d MMM yyyy')}">
+                        Date
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${#temporals.format(session.startDate, 'HH:mm')}
+                         + ' – '
+                         + ${#temporals.format(session.endDate, 'HH:mm')}">
+                        Heure
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${session.location}">
+                        Lieu
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${session.capacity - session.availableSpots}
+                         + ' / '
+                         + ${session.capacity}">
+                        Inscrits
+                    </td>
+
+                    <!-- Statut -->
+                    <td class="px-6 py-4">
+                <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                      th:classappend="${session.status == 'IN_PROGRESS'} ? ' bg-blue-50 text-blue-700' :
+                                      (${session.status == 'PLANNED'} ? ' bg-indigo-50 text-indigo-700' :
+                                      (${session.status == 'COMPLETED'} ? ' bg-emerald-50 text-emerald-700' :
+                                      ' bg-red-50 text-red-700'))"
+                      th:text="${session.status == 'IN_PROGRESS'} ? 'En cours' :
+                               (${session.status == 'PLANNED'} ? 'Planifiée' :
+                               (${session.status == 'COMPLETED'} ? 'Terminée' : 'Annulée'))">
+                </span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap gap-2">
+
+                            <a th:href="@{/animateur/sessions/{id}(id=${session.id})}"
+                               class="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
+                                Inscrits
+                            </a>
+
+                            <a th:href="@{/animateur/presence/{id}(id=${session.id})}"
+                               th:if="${session.status == 'IN_PROGRESS' or session.status == 'PLANNED'}"
+                               class="rounded-full bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition">
+                                Présences
+                            </a>
+
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(sessions)}">
+                    <td colspan="7" class="px-6 py-8 text-center text-slate-400">
+                        Aucune session assignée pour le moment
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    function filtrer() {
+        const activite = document.getElementById('activiteFilter').value.toLowerCase();
+        const statut   = document.getElementById('statutFilter').value.toLowerCase();
+        document.querySelectorAll('#sessionsTable tbody tr').forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(activite) && text.includes(statut) ? '' : 'none';
+        });
+    }
+</script>
+</body>
+</html>

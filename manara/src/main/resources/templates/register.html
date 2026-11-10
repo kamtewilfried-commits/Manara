@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+</head>
+
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700">
+
+<div class="w-full max-w-md bg-white/20 backdrop-blur-lg rounded-2xl p-8 shadow-lg">
+    <h2 class="text-2xl font-bold text-white text-center mb-6">Créer un compte</h2>
+
+    <!-- Zone message -->
+    <div id="alertBox" class="hidden mb-4 rounded-lg px-4 py-3 text-sm font-medium"></div>
+
+    <form id="registerForm" class="space-y-4">
+        <div class="field-double">
+            <div class="field">
+                <label class="block text-sm text-white mb-1" for="nom">Nom</label>
+                <input  class="w-full px-4 py-3 rounded-lg bg-white/30 text-white placeholder-white/70 focus:bg-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition" id="nom" name="nom" type="text" required />
+            </div>
+            <div class="field">
+                <label class="block text-sm text-white mb-1" for="prenom">Prénom</label>
+                <input  class="w-full px-4 py-3 rounded-lg bg-white/30 text-white placeholder-white/70 focus:bg-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition" id="prenom" name="prenom" type="text" required />
+            </div>
+        </div>
+
+
+        <div class="field">
+            <label class="block text-sm text-white mb-1" for="date">Date de naissance</label>
+            <input  class="w-full px-4 py-3 rounded-lg bg-white/30 text-white placeholder-white/70 focus:bg-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition" id="date" name="date" type="date" required />
+        </div>
+        <div>
+            <label class="block text-sm text-white mb-1" for="email">Email</label>
+            <input
+                    class="w-full px-4 py-3 rounded-lg bg-white/30 text-white placeholder-white/70 focus:bg-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+                    type="email"
+                    id="email"
+                    name="email"
+                    required>
+        </div>
+
+        <div>
+            <label class="block text-sm text-white mb-1" for="phone">Téléphone</label>
+            <input
+                    class="w-full px-4 py-3 rounded-lg bg-white/30 text-white placeholder-white/70 focus:bg-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    placeholder="+15145551234"
+                    required>
+        </div>
+
+        <div>
+            <label class="block text-sm text-white mb-1" for="password">Mot de passe</label>
+            <input
+                    class="w-full px-4 py-3 rounded-lg bg-white/30 text-white placeholder-white/70 focus:bg-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+                    type="password"
+                    id="password"
+                    name="password"
+                    required>
+        </div>
+
+        <div  class="field">
+            <label class="block text-sm text-white mb-1" for="confirm">Confirmer le mot de passe</label>
+            <input  class="w-full px-4 py-3 rounded-lg bg-white/30 text-white placeholder-white/70 focus:bg-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition" id="confirm" name="confirm" type="password" required />
+        </div>
+        <button
+                id="submitBtn"
+                class="w-full py-3 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
+                type="submit">
+            S'inscrire
+        </button>
+    </form>
+
+    <p class="mt-4 text-center text-white text-sm">
+        Déjà un compte ?
+        <a th:href="@{/login}" class="underline hover:text-indigo-200">Se connecter</a>
+    </p>
+</div>
+
+<script>
+    const form = document.getElementById("registerForm");
+    const alertBox = document.getElementById("alertBox");
+    const submitBtn = document.getElementById("submitBtn");
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+    function showMessage(message, type = "success") {
+        alertBox.className = "mb-4 rounded-lg px-4 py-3 text-sm font-medium";
+
+        if (type === "error") {
+            alertBox.classList.add("bg-red-100", "text-red-700", "border", "border-red-300");
+        } else {
+            alertBox.classList.add("bg-green-100", "text-green-700", "border", "border-green-300");
+        }
+
+        alertBox.textContent = message;
+        alertBox.classList.remove("hidden");
+    }
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Inscription en cours...";
+
+        const formData = {
+            nom: document.getElementById("nom").value,
+            prenom: document.getElementById("prenom").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+            password: document.getElementById("password").value
+        };
+
+        try {
+            const headers = {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest"
+            };
+
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader] = csrfToken;
+            }
+
+            const response = await fetch("/register/ajax", {
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify(formData)
+            });
+
+            const contentType = response.headers.get("content-type") || "";
+
+            if (!contentType.includes("application/json")) {
+                const text = await response.text();
+                throw new Error("Réponse non JSON : " + text);
+            }
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage(data.message || "Compte créé avec succès.");
+                setTimeout(() => {
+                    window.location.href = data.redirectUrl || "/login";
+                }, 1200);
+            } else {
+                showMessage(data.message || "Erreur serveur.", "error");
+            }
+
+        } catch (error) {
+            console.error("Erreur AJAX :", error);
+            showMessage("Erreur réseau ou serveur inaccessible.", "error");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "S'inscrire";
+        }
+    });
+</script>
+
+</body>
+</html>

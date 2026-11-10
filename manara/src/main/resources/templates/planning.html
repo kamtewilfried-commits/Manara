@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fr"  xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Planning</title>
+  <link rel="stylesheet" th:href="@{/css/planning.css}" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+
+<!-- Header -->
+<div th:replace="fragments/headerPlanning:: header"></div>
+<main class="container page">
+  <header class="hero">
+    <div>
+      <h1>Mon planning</h1>
+      <p class="muted">Vue semaine · activités de vos enfants · rappels et lieux.</p>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn--ghost" id="prevWeek" type="button">‹ Semaine</button>
+      <div class="range" id="rangeLabel">—</div>
+      <button class="btn btn--ghost" id="nextWeek" type="button">Semaine ›</button>
+
+      <select class="select" id="kidFilter" aria-label="Filtrer par enfant">
+        <option value="all">Tous les enfants</option>
+        <option value="aicha">Aïcha</option>
+        <option value="mika">Mika</option>
+      </select>
+
+      <button class="btn btn--soft" type="button">Exporter iCal</button>
+    </div>
+  </header>
+
+  <!-- Week grid -->
+  <section class="week" aria-label="Semaine">
+    <div class="week__head">
+      <div class="week__cell week__cell--time">Heure</div>
+      <div class="week__cell" data-day="0">Lun</div>
+      <div class="week__cell" data-day="1">Mar</div>
+      <div class="week__cell" data-day="2">Mer</div>
+      <div class="week__cell" data-day="3">Jeu</div>
+      <div class="week__cell" data-day="4">Ven</div>
+      <div class="week__cell" data-day="5">Sam</div>
+      <div class="week__cell" data-day="6">Dim</div>
+    </div>
+
+    <div class="week__body">
+      <!-- Time column -->
+      <div class="timecol">
+        <div class="time">08:00</div>
+        <div class="time">09:00</div>
+        <div class="time">10:00</div>
+        <div class="time">11:00</div>
+        <div class="time">12:00</div>
+        <div class="time">13:00</div>
+        <div class="time">14:00</div>
+        <div class="time">15:00</div>
+        <div class="time">16:00</div>
+        <div class="time">17:00</div>
+        <div class="time">18:00</div>
+        <div class="time">19:00</div>
+      </div>
+
+      <!-- Day columns (events injected by JS) -->
+      <div class="daycol" data-col="0"></div>
+      <div class="daycol" data-col="1"></div>
+      <div class="daycol" data-col="2"></div>
+      <div class="daycol" data-col="3"></div>
+      <div class="daycol" data-col="4"></div>
+      <div class="daycol" data-col="5"></div>
+      <div class="daycol" data-col="6"></div>
+    </div>
+  </section>
+
+  <!-- List view -->
+  <section class="card" aria-label="Liste des cours">
+    <div class="card__head">
+      <h2>À venir (liste)</h2>
+      <span class="hint">Même contenu que la semaine</span>
+    </div>
+
+    <div class="list" id="listView"></div>
+  </section>
+</main>
+
+<script>
+/* ---- Demo data (à remplacer par API) ---- */
+/*const events = [
+  { id: 1, kid: "aicha", kidLabel: "Aïcha", title: "Yoga enfants", day: 0, start: "18:00", end: "19:00", place: "Salle Jutras" },
+  { id: 2, kid: "mika",  kidLabel: "Mika",  title: "Qi Gong",      day: 1, start: "09:00", end: "10:00", place: "Salle multi" },
+  { id: 3, kid: "aicha", kidLabel: "Aïcha", title: "Danse créative",day: 3, start: "17:00", end: "18:00", place: "Studio 2" },
+];
+*/
+/* ---- Aide ---- */
+const minutes = (hhmm) => {
+  const [h,m] = hhmm.split(":").map(Number);
+  return h * 60 + m;
+};
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+/* ---- Week navigation (affichage seulement) ---- */
+let weekOffset = 0;
+const rangeLabel = document.getElementById("rangeLabel");
+
+function formatRange(offset){
+  // just for display; starts on Monday
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const day = (today.getDay() + 6) % 7; // Monday=0
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - day + offset * 7);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const fmt = (d) => d.toLocaleDateString("fr-CA", { month:"short", day:"numeric" });
+  const year = monday.getFullYear();
+  return `${fmt(monday)} – ${fmt(sunday)} ${year}`;
+}
+function setRange(){
+  rangeLabel.textContent = formatRange(weekOffset);
+}
+
+/* ---- Render ---- */
+const kidFilter = document.getElementById("kidFilter");
+const dayCols = Array.from(document.querySelectorAll(".daycol"));
+const listView = document.getElementById("listView");
+
+function render(){
+  const filter = kidFilter.value;
+
+  dayCols.forEach(c => c.innerHTML = "");
+  listView.innerHTML = "";
+
+  const visible = events.filter(e => filter === "all" || e.kid === filter);
+
+  // Grid events
+  visible.forEach(e => {
+    const col = dayCols[e.day];
+    if (!col) return;
+
+    const startMin = minutes(e.start);
+    const endMin = minutes(e.end);
+
+    // Grid from 08:00 to 19:00 (11 hours => 660 min)
+    const gridStart = 8 * 60;
+    const gridEnd = 19 * 60;
+    const top = ((startMin - gridStart) / (gridEnd - gridStart)) * 100;
+    const height = ((endMin - startMin) / (gridEnd - gridStart)) * 100;
+
+    const card = document.createElement("div");
+    card.className = "event";
+    card.style.top = clamp(top, 0, 100) + "%";
+    card.style.height = clamp(height, 4, 100) + "%";
+    card.dataset.kid = e.kid;
+
+    card.innerHTML = `
+      <div class="event__title">${e.title}</div>
+      <div class="event__sub">${e.start}–${e.end} · ${e.kidLabel}</div>
+      <div class="event__place">${e.place}</div>
+    `;
+    col.appendChild(card);
+  });
+
+  // List view
+  visible.forEach(e => {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `
+      <div>
+        <div class="row__title">${e.title} <span class="pill">${e.kidLabel}</span></div>
+        <div class="row__sub muted">Jour ${["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"][e.day]} · ${e.start}–${e.end} · ${e.place}</div>
+      </div>
+      <button class="btn btn--ghost" type="button">Détails</button>
+    `;
+    listView.appendChild(row);
+  });
+
+  if (visible.length === 0){
+    listView.innerHTML = `<div class="empty muted">Aucune activité pour ce filtre.</div>`;
+  }
+}
+
+document.getElementById("prevWeek").addEventListener("click", () => { weekOffset--; setRange(); render(); });
+document.getElementById("nextWeek").addEventListener("click", () => { weekOffset++; setRange(); render(); });
+kidFilter.addEventListener("change", render);
+
+setRange();
+render();
+</script>
+
+</body>
+</html>

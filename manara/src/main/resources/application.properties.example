@@ -1,0 +1,45 @@
+spring.application.name=A_REMPLIR
+
+
+
+# OpenAI
+openai.base-url=A_REMPLIR
+openai.api-key=A_REMPLIR
+
+# modèle configurable
+app.chat.model=A_REMPLIR
+# Email Configuration
+spring.mail.host=A_REMPLIR
+spring.mail.port=A_REMPLIR
+spring.mail.username=A_REMPLIR
+spring.mail.password=A_REMPLIR
+spring.mail.properties.mail.smtp.auth=A_REMPLIR
+spring.mail.properties.mail.smtp.starttls.enable=A_REMPLIR
+
+server.servlet.session.cookie.same-site=A_REMPLIR
+server.servlet.session.cookie.secure=A_REMPLIR
+
+twilio.account.sid=A_REMPLIR
+twilio.auth.token=A_REMPLIR
+twilio.verify.service.sid=A_REMPLIR
+twilio.from.phone=A_REMPLIR
+
+spring.security.oauth2.client.registration.google.client-id=A_REMPLIR
+spring.security.oauth2.client.registration.google.client-secret=A_REMPLIR
+spring.security.oauth2.client.registration.google.scope=A_REMPLIR
+stripe.secret.key=A_REMPLIR
+stripe.webhook.secret=A_REMPLIR
+app.base-url=A_REMPLIR
+spring.datasource.url=A_REMPLIR
+spring.datasource.username=A_REMPLIR
+spring.datasource.password=A_REMPLIR
+#spring.datasource.password=A_REMPLIR
+spring.datasource.driver-class-name=A_REMPLIR
+spring.jpa.database-platform=A_REMPLIR
+spring.jpa.hibernate.ddl-auto=A_REMPLIR
+#spring.jpa.show-sql=A_REMPLIR
+#pour afficher les instructions sql sur la console
+spring.jpa.show-sql=A_REMPLIR
+#pour rendre les instructions sql plus lisibles sur la console
+spring.jpa.properties.hibernate.format_sql=A_REMPLIR
+# change le password pour root OU le password de ta base de donnees

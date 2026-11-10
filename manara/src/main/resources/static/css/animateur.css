@@ -1,0 +1,235 @@
+.animateur-layout {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    min-height: calc(100vh - 56px);
+}
+
+.animateur-content {
+    padding: 24px;
+    background: var(--color-bg);
+}
+
+/* ---------- Session du jour (card accent) ---------- */
+.session-today {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+.session-today-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.session-today-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 3px;
+}
+
+.session-today-sub {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.session-today-meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 14px;
+}
+
+.session-meta-item {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.session-meta-item strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 1px;
+}
+
+/* ---------- Feuille de présence ---------- */
+.presence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.presence-session-info {
+    background: var(--color-primary-light);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.presence-session-info span {
+    font-size: 13px;
+    color: var(--color-primary-dark);
+    font-weight: 500;
+}
+
+.presence-list {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.presence-list-header {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 20px;
+    padding: 10px 16px;
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.presence-list-header span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.presence-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 20px;
+    align-items: center;
+    padding: 10px 16px;
+    border-top: 1px solid var(--color-border);
+    transition: background var(--transition);
+}
+
+.presence-row:hover {
+    background: var(--color-bg);
+}
+
+.presence-child-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.presence-child-info {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    margin-top: 1px;
+}
+
+.presence-allergie {
+    font-size: 11px;
+    min-width: 80px;
+    text-align: center;
+}
+
+/* Case à cocher stylisée */
+.presence-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-border-dark);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition);
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.presence-checkbox:checked {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.presence-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 7px;
+    height: 11px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+
+.presence-checkbox:hover {
+    border-color: var(--color-primary);
+}
+
+.presence-footer {
+    padding: 10px 16px;
+    background: var(--color-bg-secondary);
+    border-top: 1px solid var(--color-border);
+    font-size: 12px;
+    color: var(--color-text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.presence-count {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+/* ---------- Sessions list ---------- */
+.sessions-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.sessions-filters .form-control {
+    width: auto;
+    min-width: 160px;
+}
+
+/* Statuts sessions */
+.status-en-cours   { background: var(--color-primary-light); color: var(--color-primary-dark); }
+.status-planifiee  { background: var(--color-info-bg);       color: var(--color-info); }
+.status-terminee   { background: var(--color-bg-secondary);  color: var(--color-text-muted); }
+.status-annulee    { background: var(--color-danger-bg);     color: var(--color-danger); }
+
+
+.planning-event-animateur {
+    background: var(--color-primary-light);
+    border-left: 3px solid var(--color-primary);
+    border-radius: 0 4px 4px 0;
+    padding: 4px 7px;
+    font-size: 11px;
+    color: var(--color-primary-dark);
+    margin-bottom: 3px;
+    cursor: pointer;
+    transition: background var(--transition);
+}
+
+.planning-event-animateur:hover {
+    background: #c5eae1;
+}
+
+/* ---------- Profil animateur ---------- */
+.animateur-activities-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}

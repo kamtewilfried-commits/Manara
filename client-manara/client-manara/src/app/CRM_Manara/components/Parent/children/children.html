@@ -1,0 +1,206 @@
+<div class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors duration-200">
+  <app-header-parent
+    *ngIf="connectedUser"
+    [connectedUser]="connectedUser">
+  </app-header-parent>
+
+  <div class="flex min-h-screen bg-slate-100 dark:bg-slate-900">
+    <app-sidebar-parent
+      *ngIf="connectedUser"
+      [activePage]="'enfants'"
+      [connectedUser]="connectedUser"
+      [unreadNotifications]="unreadNotifications">
+    </app-sidebar-parent>
+
+    <main class="flex-1 p-8">
+      <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Mes enfants</h1>
+          <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+            Gérez les profils de vos enfants
+          </p>
+        </div>
+
+        <button
+          type="button"
+          (click)="openAddModal()"
+          class="inline-flex items-center justify-center rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800">
+          + Ajouter un enfant
+        </button>
+      </div>
+
+      <div *ngIf="succes"
+           class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        {{ succes }}
+      </div>
+
+      <div *ngIf="erreur"
+           class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+        {{ erreur }}
+      </div>
+
+      <div *ngIf="children.length > 0" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div
+          *ngFor="let child of children"
+          class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 text-center shadow-sm">
+
+          <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-lg font-bold text-indigo-700 dark:text-indigo-300">
+            {{ getInitiales(child) }}
+          </div>
+
+          <div class="text-lg font-extrabold text-slate-900 dark:text-white">
+            {{ child.firstName }} {{ child.lastName }}
+          </div>
+
+          <div class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {{ child.birthDate | date:'d MMM yyyy' }}
+          </div>
+
+          <div class="mt-3 min-h-[24px]">
+            <span
+              *ngIf="child.allergies && child.allergies.trim() !== ''"
+              class="inline-flex rounded-full bg-amber-50 dark:bg-amber-900/30 px-3 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">
+              {{ child.allergies }}
+            </span>
+          </div>
+
+          <div class="mt-5 flex justify-center gap-2">
+            <button
+              type="button"
+              (click)="openEditModal(child)"
+              class="inline-flex items-center rounded-full border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-600">
+              Modifier
+            </button>
+
+            <button
+              type="button"
+              (click)="deleteChild(child)"
+              class="inline-flex items-center rounded-full border border-red-200 bg-red-50 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100">
+              Supprimer
+            </button>
+
+            <a
+              routerLink="/parent/activites"
+              class="inline-flex items-center rounded-full bg-blue-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-800">
+              Inscrire
+            </a>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="openAddModal()"
+          class="flex min-h-[220px] items-center justify-center rounded-3xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-5 text-center text-sm font-bold text-slate-500 dark:text-slate-400 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-700">
+          + Ajouter<br>un enfant
+        </button>
+      </div>
+
+      <div *ngIf="children.length === 0"
+           class="mt-6 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-10 text-center text-sm text-slate-500 dark:text-slate-400 shadow-sm">
+        <p class="mb-4">
+          Vous n'avez pas encore ajouté d'enfant.
+        </p>
+
+        <button
+          type="button"
+          (click)="openAddModal()"
+          class="inline-flex items-center rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-800">
+          + Ajouter mon premier enfant
+        </button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL AJOUT ENFANT -->
+<div
+  *ngIf="showAddModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+
+  <div class="w-full max-w-lg rounded-3xl bg-white dark:bg-slate-800 p-6 shadow-xl">
+    <div class="mb-5 flex items-center justify-between">
+      <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">
+        {{ isEditMode ? 'Modifier un enfant' : 'Ajouter un enfant' }}
+      </h2>
+
+      <button
+        type="button"
+        (click)="closeAddModal()"
+        class="rounded-full px-3 py-1 text-xl font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700">
+        ×
+      </button>
+    </div>
+
+    <form (ngSubmit)="saveChild()" #childForm="ngForm" class="space-y-4">
+      <div>
+        <label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Prénom</label>
+        <input
+          type="text"
+          name="firstName"
+          placeholder="Prénom"
+          [(ngModel)]="newChild.firstName"
+          required
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-blue-600">
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Nom</label>
+        <input
+          type="text"
+          name="lastName"
+          placeholder="Nom de famille"
+          [(ngModel)]="newChild.lastName"
+          required
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-blue-600">
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Date de naissance</label>
+        <input
+          type="date"
+          name="birthDate"
+          title="Date de naissance"
+          [(ngModel)]="newChild.birthDate"
+          required
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-blue-600">
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Allergies</label>
+        <input
+          type="text"
+          name="allergies"
+          placeholder="Ex : arachides, lactose..."
+          [(ngModel)]="newChild.allergies"
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-blue-600">
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Notes médicales</label>
+        <textarea
+          name="medicalNotes"
+          placeholder="Informations médicales importantes..."
+          [(ngModel)]="newChild.medicalNotes"
+          rows="3"
+          class="w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white px-4 py-3 text-sm outline-none focus:border-blue-600">
+        </textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4">
+        <button
+          type="button"
+          (click)="closeAddModal()"
+          class="rounded-full border border-slate-300 dark:border-slate-600 px-5 py-3 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700">
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="childForm.invalid"
+          class="rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50">
+          {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+<div class="min-h-screen bg-slate-100">
+  <app-header-animateur [connectedUser]="connectedUser"></app-header-animateur>
+
+  <div class="flex min-h-screen bg-slate-100">
+    <app-sidebar-animateur
+      [activePage]="'planning'"
+      [connectedUser]="connectedUser">
+    </app-sidebar-animateur>
+
+    <main class="flex-1 p-8">
+      <div class="mb-6">
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Mon planning</h1>
+        <p class="mt-1 text-sm font-medium text-slate-500">
+          Sessions assignées (vue calendrier simplifiée)
+        </p>
+      </div>
+
+      <div
+        *ngIf="erreur"
+        class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+        {{ erreur }}
+      </div>
+
+      <div
+        *ngIf="loading"
+        class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+        Chargement du planning…
+      </div>
+
+      <div
+        *ngIf="!loading && !erreur && events.length === 0"
+        class="rounded-3xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
+        Aucune session planifiée pour le moment.
+      </div>
+
+      <div *ngIf="!loading && events.length > 0" class="space-y-8">
+        <section
+          *ngFor="let day of orderedDays"
+          class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 class="mb-4 text-lg font-extrabold capitalize text-slate-900">{{ day }}</h2>
+
+          <ul class="space-y-3">
+            <li
+              *ngFor="let ev of eventsForDay(day)"
+              class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm">
+              <div>
+                <p class="font-bold text-slate-900">{{ ev.activityName }}</p>
+                <p class="text-slate-600">
+                  <span *ngIf="ev.slot">{{ ev.slot }}</span>
+                  <span *ngIf="ev.location"> · {{ ev.location }}</span>
+                </p>
+              </div>
+              <div class="text-right text-slate-600">
+                <span *ngIf="ev.inscrits != null">{{ ev.inscrits }} inscrit(s)</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>

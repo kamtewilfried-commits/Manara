@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Activité</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950">
+
+<div th:replace="~{fragments/headerAdmin :: headerAdmin}"></div>
+
+<div class="flex min-h-screen bg-slate-100">
+
+    <div th:replace="~{fragments/sidebarAdmin :: sidebarAdmin('activites')}"></div>
+
+    <main  class="container page">
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">
+                    Nouvel utilisateur
+                </h1>
+                <p class="mt-1 text-sm font-medium text-slate-500">
+                    Créez un compte parent, animateur ou administrateur
+                </p>
+            </div>
+
+            <a th:href="@{/utilisateurs}"
+               class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
+                ← Retour
+            </a>
+        </div>
+
+        <div th:if="${erreur}"
+             class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
+             th:text="${erreur}"></div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <form th:action="@{/utilisateurs/nouveau}" th:object="${userForm}" method="post" class="space-y-6">
+
+                <!-- Nom -->
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-slate-700">Prénom</label>
+                        <input type="text"
+                               th:field="*{firstName}"
+                               placeholder="Jean"
+                               required
+                               class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-slate-700">Nom</label>
+                        <input type="text"
+                               th:field="*{lastName}"
+                               placeholder="Dupont"
+                               required
+                               class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="mb-2 block text-sm font-bold text-slate-700">Email</label>
+                    <input type="email"
+                           th:field="*{email}"
+                           placeholder="email@email.com"
+                           required
+                           class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+                </div>
+
+                <!-- Téléphone -->
+                <div>
+                    <label class="mb-2 block text-sm font-bold text-slate-700">Téléphone</label>
+                    <input type="text"
+                           th:field="*{phone}"
+                           placeholder="514-000-0000"
+                           class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+                </div>
+
+                <!-- Mot de passe -->
+                <div>
+                    <label class="mb-2 block text-sm font-bold text-slate-700">Mot de passe</label>
+                    <input type="password"
+                           th:field="*{password}"
+                           required
+                           class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+                </div>
+
+                <!-- Rôle + Statut -->
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-slate-700">Rôle</label>
+                        <select th:field="*{role}"
+                                class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+                            <option value="ADMIN">Admin</option>
+                            <option value="PARENT">Parent</option>
+                            <option value="ANIMATEUR">Animateur</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-bold text-slate-700">Statut</label>
+                        <select th:field="*{status}"
+                                class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100">
+                            <option value="ACTIF">Actif</option>
+                            <option value="INACTIF">Inactif</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Options -->
+                <div class="grid gap-3 md:grid-cols-2">
+                    <label class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
+                        <input type="checkbox"
+                               th:field="*{active}"
+                               class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span>Compte actif</span>
+                    </label>
+
+                    <label class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
+                        <input type="checkbox"
+                               th:field="*{twoFactorEnabled}"
+                               class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span>2FA activé</span>
+                    </label>
+                </div>
+
+                <!-- Boutons -->
+                <div class="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-between">
+                    <a th:href="@{/admin/utilisateurs}"
+                       class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+                        Annuler
+                    </a>
+
+                    <button type="submit"
+                            class="inline-flex items-center justify-center rounded-full bg-blue-700 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800">
+                        ✅ Créer
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </main>
+</div>
+<div th:replace="fragments/chat-widget :: chatWidget"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

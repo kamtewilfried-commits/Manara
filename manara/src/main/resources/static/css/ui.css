@@ -1,0 +1,75 @@
+:root{
+  --bg:#f6f7fb; --surface:#fff; --text:#0f172a; --muted:#64748b;
+  --line:rgba(15,23,42,.10); --shadow:0 12px 30px rgba(2,6,23,.08);
+  --primary:#1d4ed8; --primary2:#0b3aa8; --soft:rgba(29,78,216,.10);
+  --ok:#16a34a; --okBg:rgba(22,163,74,.12);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);line-height:1.5}
+.container{width:min(1120px,calc(100% - 40px));margin:0 auto}
+.page{padding:24px 0 40px}
+.muted{color:var(--muted)}
+.strong{font-weight:1000}
+
+/* Topbar */
+.topbar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.78);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar__inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:1000;text-decoration:none;color:inherit}
+.brand__dot{width:10px;height:10px;border-radius:999px;background:var(--primary);box-shadow:0 0 0 6px rgba(29,78,216,.10)}
+.nav{display:flex;gap:14px;align-items:center}
+.nav__link{font-weight:900;color:rgba(15,23,42,.80);text-decoration:none}
+.nav__link.is-active{color:var(--text)}
+.avatar{width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:rgba(15,23,42,.08);font-weight:1000}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:999px;border:1px solid transparent;font-weight:1000;cursor:pointer;user-select:none;white-space:nowrap;transition:transform .08s ease,background .15s ease,border-color .15s ease}
+.btn:active{transform:translateY(1px)}
+.btn--primary{background:var(--primary);color:#fff;box-shadow:0 10px 18px rgba(29,78,216,.18)}
+.btn--primary:hover{background:var(--primary2)}
+.btn--soft{background:var(--soft);color:var(--primary);border-color:rgba(29,78,216,.18)}
+.btn--ghost{background:transparent;border-color:var(--line);color:var(--text)}
+.btn--full{width:100%;border-radius:14px}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:14px;margin-top:16px}
+.card__head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.card__head h2{margin:0;font-size:16px;letter-spacing:-.2px}
+.link{color:var(--primary);font-weight:1000;text-decoration:none}
+.link:hover{text-decoration:underline}
+
+/* Table */
+.table{display:grid;border:1px solid rgba(15,23,42,.08);border-radius:16px;overflow:hidden}
+.trow{display:grid;grid-template-columns:1.2fr .5fr 1fr .9fr;gap:12px;align-items:center;padding:12px 12px;background:#fff;border-top:1px solid rgba(15,23,42,.08)}
+.trow:first-child{border-top:none}
+.trow.thead{background:rgba(2,6,23,.02);font-weight:1000;color:rgba(15,23,42,.70);text-transform:uppercase;letter-spacing:.35px;font-size:12px}
+.actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+/* Tags */
+.tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid rgba(15,23,42,.10);background:rgba(2,6,23,.02);font-weight:1000;font-size:12px}
+.tag--ok{background:var(--okBg);border-color:rgba(22,163,74,.25);color:var(--ok)}
+
+/* Form */
+.formGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.field label{display:block;font-size:12px;font-weight:1000;color:rgba(15,23,42,.70);text-transform:uppercase;letter-spacing:.35px;margin-bottom:6px}
+.field select,.field input{width:100%;padding:12px 12px;border-radius:14px;border:1px solid rgba(15,23,42,.12);background:#fff;outline:none}
+.summary{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr) auto;gap:12px;align-items:center;padding:12px;border-radius:16px;border:1px solid rgba(15,23,42,.08);background:rgba(2,6,23,.01)}
+
+/* Planning */
+.stack{display:flex;gap:10px;flex-wrap:wrap}
+.calendarWeek{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.day{border:1px solid rgba(15,23,42,.08);border-radius:16px;background:#fff;overflow:hidden}
+.day__head{padding:10px 12px;background:rgba(2,6,23,.02);font-weight:1000}
+.slot{padding:10px 12px}
+.slot__title{font-weight:1000}
+.empty{padding:14px 12px}
+
+/* Responsive */
+@media (max-width: 980px){
+  .nav{display:none}
+  .formGrid{grid-template-columns:1fr 1fr}
+  .summary{grid-template-columns:1fr 1fr; }
+  .calendarWeek{grid-template-columns:1fr}
+  .trow{grid-template-columns:1fr}
+  .actions{justify-content:flex-start}
+}

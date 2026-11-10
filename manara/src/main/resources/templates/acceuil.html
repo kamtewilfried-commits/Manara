@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil — Centre communautaire Manara</title>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="shortcut icon"  th:href="@{../static/image/logo.png}">
+    <link rel="stylesheet" th:href="@{../static/css/acceuil.css}" />
+    <style>
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar-manara">
+    <a th:href="@{/}" class="navbar-brand-logo">
+        <div class="logo-icon">M</div>
+        <span class="logo-name">Manara</span>
+    </a>
+
+    <div class="navbar-links">
+        <a th:href="@{/activites}">Activités</a>
+        <a href="#comment">Comment ça fonctionne</a>
+        <a href="#contact">Contact</a>
+    </div>
+
+    <div class="navbar-actions">
+        <div style="display:flex;gap:10px">
+            <a th:href="@{/connexion}" class="btn-nav-outline">Se connecter</a>
+            <a th:href="@{/inscription}" class="btn-nav-yellow">Créer un compte</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-badge">Centre communautaire · Montréal</div>
+    <h1>Des activités pour vos enfants, simples à gérer</h1>
+    <p>Inscrivez vos enfants, consultez les plannings et recevez des confirmations — tout depuis votre espace personnel.</p>
+    <div class="hero-btns">
+        <a th:href="@{/inscription}" class="btn-hero-yellow">Créer un compte gratuit</a>
+        <a th:href="@{/activites}" class="btn-hero-outline">Voir les activités</a>
+    </div>
+</section>
+
+<!-- ===== STATS BAR ===== -->
+<div class="stats-bar">
+    <div class="stat-item">
+        <div class="num" th:text="${stats?.totalActivites} ?: '6'">6</div>
+        <div class="label">Activités disponibles</div>
+    </div>
+    <div class="stat-item">
+        <div class="num" th:text="${stats?.totalEnfants} ?: '120+'">120+</div>
+        <div class="label">Enfants inscrits</div>
+    </div>
+    <div class="stat-item">
+        <div class="num" th:text="${stats?.totalParents} ?: '80+'">80+</div>
+        <div class="label">Familles</div>
+    </div>
+    <div class="stat-item">
+        <div class="num">5</div>
+        <div class="label">Animateurs</div>
+    </div>
+</div>
+
+<!-- ===== COMMENT ÇA FONCTIONNE ===== -->
+<section class="section" id="comment">
+    <div style="max-width: 900px; margin: 0 auto;">
+        <div class="text-center">
+            <span class="section-tag">Simple et rapide</span>
+            <h2 class="section-title">Comment ça fonctionne</h2>
+            <p class="section-sub">Trois étapes pour inscrire vos enfants</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <h3>Créez votre compte</h3>
+                <p>Inscrivez-vous gratuitement et ajoutez les profils de vos enfants avec leurs informations médicales.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h3>Choisissez une activité</h3>
+                <p>Parcourez nos activités, consultez les places disponibles et inscrivez vos enfants en quelques clics.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h3>Suivez le planning</h3>
+                <p>Consultez les horaires depuis votre espace et recevez des rappels par courriel avant chaque session.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== ACTIVITÉS ===== -->
+<section class="section-alt" id="evenements">
+    <div style="max-width: 960px; margin: 0 auto;">
+        <div class="text-center mb-4">
+            <span class="section-tag">Cette session</span>
+            <h2 class="section-title">Nos activités</h2>
+            <p class="section-sub">Des programmes adaptés à chaque âge</p>
+        </div>
+
+        <!-- Activités dynamiques depuis le controller -->
+        <div class="activities-grid" th:if="${activites != null and !activites.isEmpty()}">
+            <a th:each="activite : ${activites}"
+               th:href="@{/activites/{id}(id=${activite.id})}"
+               class="activity-card">
+                <div class="activity-icon" style="background: #E6F1FB;">
+                    <i class="bi bi-star" style="color: #185FA5;"></i>
+                </div>
+                <h3 th:text="${activite.name}">Nom de l'activité</h3>
+                <p th:text="${activite.description}">Description</p>
+                <div class="activity-meta">
+                    <span class="activity-schedule" th:text="${activite.ageRange}">4-7 ans</span>
+                    <span class="badge-places badge-green">Disponible</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Données statiques si aucune activité en base -->
+        <div class="activities-grid" th:if="${activites == null or activites.isEmpty()}">
+            <a th:href="@{/activites}" class="activity-card">
+                <div class="activity-icon" style="background:#E6F1FB">🎵</div>
+                <h3>Éveil musical</h3>
+                <p>Initiation aux instruments et au rythme pour les tout-petits.</p>
+                <div class="activity-meta">
+                    <span class="activity-schedule">Lundi · 09h00 · Salle A</span>
+                    <span class="badge-places badge-green">13 places</span>
+                </div>
+            </a>
+            <a th:href="@{/activites}" class="activity-card">
+                <div class="activity-icon" style="background:#FAEEDA">🎨</div>
+                <h3>Arts plastiques</h3>
+                <p>Peinture, dessin et bricolage créatif pour les 6-12 ans.</p>
+                <div class="activity-meta">
+                    <span class="activity-schedule">Mardi · 13h00 · Salle B</span>
+                    <span class="badge-places badge-green">10 places</span>
+                </div>
+            </a>
+            <a th:href="@{/activites}" class="activity-card">
+                <div class="activity-icon" style="background:#EAF3DE">⚽</div>
+                <h3>Sports collectifs</h3>
+                <p>Football et basketball en équipe pour les 8-14 ans.</p>
+                <div class="activity-meta">
+                    <span class="activity-schedule">Jeudi · 13h00 · Gymnase</span>
+                    <span class="badge-places badge-orange">2 places</span>
+                </div>
+            </a>
+            <a th:href="@{/activites}" class="activity-card">
+                <div class="activity-icon" style="background:#FCEBEB">📚</div>
+                <h3>Aide aux devoirs</h3>
+                <p>Soutien scolaire encadré pour les 7-14 ans.</p>
+                <div class="activity-meta">
+                    <span class="activity-schedule">Mercredi · 15h30 · Salle C</span>
+                    <span class="badge-places badge-red">Complet</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="text-center mt-4">
+            <a th:href="@{/activites}" class="btn-hero-yellow" style="display:inline-block">
+                Voir toutes les activités
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section">
+    <h2>Prêt à inscrire vos enfants ?</h2>
+    <p>Créez votre compte gratuitement et réservez une place en quelques minutes.</p>
+    <div class="hero-btns">
+        <a th:href="@{/inscription}" class="btn-hero-yellow">Commencer maintenant</a>
+        <a th:href="@{/connexion}" class="btn-hero-outline">J'ai déjà un compte</a>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer" id="contact">
+    <div id="a-propos"></div>
+
+    <div style="width:100%; text-align:center; margin-top:30px;  padding-top:15px;">
+        <p>© 2026 Centre communautaire Manara — Montréal</p>
+        <p style="margin-top:4px;">info@manara.ca · 514-555-0000</p>
+    </div>
+
+</footer>
+
+</body>
+</html>

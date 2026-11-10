@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav th:fragment="sidebarAnimateur(activePage)"
+     class="min-h-screen w-72 bg-[#03ae87] px-5 py-6 text-white">
+
+    <!-- Profil -->
+    <div class="mb-8 rounded-2xl bg-white/10 p-4 backdrop-blur">
+        <div class="text-sm font-semibold"
+             th:text="${connectedUser.firstName} + ' ' + ${connectedUser.lastName}">
+            Sophie Tremblay
+        </div>
+        <div class="mt-1 text-xs text-white/70">Animateur</div>
+    </div>
+
+    <!-- Menu -->
+    <div class="space-y-2">
+
+        <a th:href="@{/animateur/dashboard}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'dashboard'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Tableau de bord
+        </a>
+
+        <a th:href="@{/animateur/sessions}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'sessions'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Mes sessions
+        </a>
+
+        <a th:href="@{/animateur/presence}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'presence'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Feuille de présence
+        </a>
+
+        <a th:href="@{/animateur/planning}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'planning'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Mon planning
+        </a>
+
+        <a th:href="@{/animateur/profil}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'profil'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Mon profil
+        </a>
+
+    </div>
+
+</nav>
+
+</body>
+</html>

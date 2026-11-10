@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Confirmation d'inscription</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .sidebar  { display: none !important; }
+            .parent-layout { display: block !important; }
+        }
+    </style>
+</head>
+<body class="flex min-h-screen bg-slate-100">
+
+<div th:replace="~{fragments/headerParent :: headerParent}" class="no-print"></div>
+
+<div  class="container page">
+
+    <div th:replace="~{fragments/sidebarParent :: sidebarParent('inscriptions')}"
+         class="no-print"></div>
+
+    <main class="parent-content">
+
+        <div class="dashboard-header no-print">
+            <div>
+                <div class="page-title">Confirmation d'inscription</div>
+                <p class="page-subtitle">Conservez ce reçu comme preuve d'inscription</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button onclick="window.print()" class="btn btn-secondary">🖨 Imprimer</button>
+                <a th:href="@{/parent/inscriptions}" class="btn btn-primary">Retour aux inscriptions</a>
+            </div>
+        </div>
+
+        <!-- Reçu imprimable -->
+        <div class="card" style="max-width:580px;" id="recu">
+
+            <!-- En-tête reçu -->
+            <div style="display:flex; align-items:center; gap:14px;
+                            padding-bottom:16px; margin-bottom:16px;
+                            border-bottom:2px solid var(--color-primary);">
+                <img th:src="@{/image/logo.png}" alt="Logo CRM Manara"
+                     style="width:44px; height:44px; object-fit:contain;">
+                <div>
+                    <div style="font-size:17px; font-weight:700; color:var(--color-primary);">
+                        CRM Manara
+                    </div>
+                    <div style="font-size:12px; color:var(--color-text-muted);">
+                        Centre communautaire Manara — Montréal, QC
+                    </div>
+                </div>
+                <span class="badge badge-success" style="margin-left:auto; font-size:12px;">
+                        Inscription confirmée
+                    </span>
+            </div>
+
+            <!-- Référence et date -->
+            <div style="display:flex; justify-content:space-between;
+                            margin-bottom:20px; font-size:13px;">
+                <span class="text-muted">Numéro de référence</span>
+                <strong th:text="'#INS-' + ${registration.id}">INS-1</strong>
+            </div>
+
+            <!-- Détails en deux colonnes -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+
+                <!-- Colonne parent & enfant -->
+                <div>
+                    <div style="font-size:11px; font-weight:600; color:var(--color-text-muted);
+                                    text-transform:uppercase; letter-spacing:0.05em;
+                                    margin-bottom:10px;">
+                        Parent & enfant
+                    </div>
+                    <table style="width:100%; font-size:13px; border-collapse:collapse;">
+                        <tr>
+                            <td style="padding:5px 0; color:var(--color-text-muted);">Parent</td>
+                            <td style="padding:5px 0; font-weight:500; text-align:right;"
+                                th:text="${registration.child.parent.firstName}
+                                             + ' '
+                                             + ${registration.child.parent.lastName}">
+                                Parent
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 0; color:var(--color-text-muted);">Courriel</td>
+                            <td style="padding:5px 0; font-weight:500; text-align:right;"
+                                th:text="${registration.child.parent.email}">
+                                Email
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 0; color:var(--color-text-muted);">Enfant</td>
+                            <td style="padding:5px 0; font-weight:500; text-align:right;"
+                                th:text="${registration.child.firstName}
+                                             + ' '
+                                             + ${registration.child.lastName}">
+                                Enfant
+                            </td>
+                        </tr>
+                        <tr th:if="${registration.child.allergies != null
+                                         and !registration.child.allergies.isEmpty()}">
+                            <td style="padding:5px 0; color:var(--color-text-muted);">Allergies</td>
+                            <td style="padding:5px 0; text-align:right;">
+                                    <span class="badge badge-warning"
+                                          th:text="${registration.child.allergies}">Allergies</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Colonne session -->
+                <div>
+                    <div style="font-size:11px; font-weight:600; color:var(--color-text-muted);
+                                    text-transform:uppercase; letter-spacing:0.05em;
+                                    margin-bottom:10px;">
+                        Session
+                    </div>
+                    <table style="width:100%; font-size:13px; border-collapse:collapse;">
+                        <tr>
+                            <td style="padding:5px 0; color:var(--color-text-muted);">Activité</td>
+                            <td style="padding:5px 0; font-weight:500; text-align:right;"
+                                th:text="${registration.session.activity.name}">Activité</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 0; color:var(--color-text-muted);">Date</td>
+                            <td style="padding:5px 0; font-weight:500; text-align:right;"
+                                th:text="${#temporals.format(registration.session.startDate,
+                                                                 'EEEE d MMM yyyy')}">
+                                Date
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 0; color:var(--color-text-muted);">Horaire</td>
+                            <td style="padding:5px 0; font-weight:500; text-align:right;"
+                                th:text="${#temporals.format(registration.session.startDate, 'HH:mm')}
+                                             + ' – '
+                                             + ${#temporals.format(registration.session.endDate, 'HH:mm')}">
+                                Heure
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 0; color:var(--color-text-muted);">Lieu</td>
+                            <td style="padding:5px 0; font-weight:500; text-align:right;"
+                                th:text="${registration.session.location}">Lieu</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px 0; color:var(--color-text-muted);">Date d'inscription</td>
+                            <td style="padding:5px 0; font-weight:500; text-align:right;"
+                                th:text="${#temporals.format(registration.registrationDate, 'd MMM yyyy')}">
+                                Date inscription
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Pied de reçu -->
+            <div style="background:var(--color-primary-light);
+                            border-radius:var(--radius-md);
+                            padding:12px 14px;
+                            font-size:12px;
+                            color:var(--color-primary-dark);">
+                Un courriel de confirmation a été envoyé à
+                <strong th:text="${registration.child.parent.email}">email</strong>.
+                Conservez ce reçu pour vos dossiers.
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

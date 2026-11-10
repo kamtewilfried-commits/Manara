@@ -1,0 +1,164 @@
+<div class="min-h-screen bg-slate-100">
+  <app-header-animateur [connectedUser]="connectedUser"></app-header-animateur>
+
+  <div class="flex min-h-screen bg-slate-100">
+    <app-sidebar-animateur
+      [activePage]="'profil'"
+      [connectedUser]="connectedUser">
+    </app-sidebar-animateur>
+
+    <main class="flex-1 p-8">
+      <div class="mb-6">
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Mon profil</h1>
+        <p class="mt-1 text-sm font-medium text-slate-500">
+          Vos informations personnelles
+        </p>
+      </div>
+
+      <div *ngIf="succes"
+           class="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        {{ succes }}
+      </div>
+
+      <div *ngIf="erreur"
+           class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+        {{ erreur }}
+      </div>
+
+      <div class="max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <!-- Header profil -->
+        <div class="mb-6 flex items-center gap-4">
+          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-xl font-bold shadow-sm">
+            {{ getInitiales() }}
+          </div>
+
+          <div>
+            <div class="text-lg font-bold text-slate-900">
+              {{ connectedUser.firstName }} {{ connectedUser.lastName }}
+            </div>
+            <div class="text-sm text-slate-500">Animateur · CRM Manara</div>
+          </div>
+        </div>
+
+        <!-- FORM INFOS -->
+        <form (ngSubmit)="enregistrerProfil()" #profileFormRef="ngForm" class="space-y-5">
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-bold text-slate-700">Prénom</label>
+              <input
+                type="text"
+                name="firstName"
+                [(ngModel)]="userForm.firstName"
+                required
+                class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
+              />
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-bold text-slate-700">Nom</label>
+              <input
+                type="text"
+                name="lastName"
+                [(ngModel)]="userForm.lastName"
+                required
+                class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-bold text-slate-700">Adresse courriel</label>
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="userForm.email"
+              required
+              class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
+            />
+          </div>
+
+          <!-- Activités -->
+          <div>
+            <label class="mb-2 block text-sm font-bold text-slate-700">Activités assignées</label>
+
+            <div class="flex flex-wrap gap-2">
+              <span
+                *ngFor="let activity of activitesAssignees"
+                class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700"
+              >
+                {{ activity.name }}
+              </span>
+
+              <span *ngIf="activitesAssignees.length === 0"
+                    class="text-sm text-slate-400">
+                Aucune activité assignée
+              </span>
+            </div>
+
+            <p class="mt-2 text-xs text-slate-400">
+              Les activités sont assignées par l'administrateur.
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full rounded-full bg-blue-700 px-6 py-3 text-sm font-bold text-white hover:bg-blue-800 transition"
+          >
+            Enregistrer les modifications
+          </button>
+        </form>
+
+        <!-- MOT DE PASSE -->
+        <div class="mt-8 border-t border-slate-200 pt-6">
+          <h3 class="mb-4 text-sm font-bold text-slate-800">
+            Changer le mot de passe
+          </h3>
+
+          <form (ngSubmit)="changerMotDePasse()" #passwordFormRef="ngForm" class="space-y-5">
+            <div>
+              <label class="mb-2 block text-sm font-bold text-slate-700">Mot de passe actuel</label>
+              <input
+                type="password"
+                name="currentPassword"
+                [(ngModel)]="passwordForm.currentPassword"
+                placeholder="••••••••"
+                class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+              />
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <div>
+                <label class="mb-2 block text-sm font-bold text-slate-700">Nouveau</label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  [(ngModel)]="passwordForm.newPassword"
+                  placeholder="••••••••"
+                  class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+                />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-bold text-slate-700">Confirmer</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  [(ngModel)]="passwordForm.confirmPassword"
+                  placeholder="••••••••"
+                  class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition"
+            >
+              Changer le mot de passe
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

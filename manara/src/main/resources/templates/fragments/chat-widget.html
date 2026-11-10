@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+<div th:fragment="chatWidget">
+    <div id="chat-widget" class="fixed bottom-6 right-6 z-50">
+        <!-- Bouton flottant -->
+        <button id="chat-toggle"
+                type="button"
+                class="h-14 w-14 rounded-full bg-slate-900 hover:bg-slate-800 text-white shadow-2xl flex items-center justify-center text-2xl transition">
+            <img th:src="@{/images/Logo.png}"
+                 class="w-32 h-15 rounded-full object-cover border-4 border-blue-900 shadow-lg" />
+        </button>
+
+        <!-- Panneau -->
+        <div id="chat-panel"
+             class="hidden mt-4 w-[360px] max-w-[92vw] h-[540px] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+
+            <!-- Header -->
+            <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
+                <div>
+                    <h3 class="font-semibold text-sm"> <img th:src="@{/images/Logo.png}"
+                                                            class="w-32 h-15 rounded-full object-cover border-4 border-blue-900 shadow-lg" />ManaraGPT</h3>
+                    <p class="text-xs text-slate-300">Centre communautaire</p>
+                </div>
+                <button id="chat-close"
+                        type="button"
+                        class="text-white text-lg hover:opacity-80">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Messages -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
+                <div class="flex justify-start">
+                    <div class="max-w-[85%] bg-white border border-slate-200 text-slate-800 rounded-2xl px-4 py-3 shadow-sm whitespace-pre-line">
+                        Bonjour 👋
+                        Je peux répondre sur les activités, sessions et horaires.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="chat-form" class="border-t border-slate-200 p-3 bg-white flex gap-2">
+                <input id="chat-input"
+                       type="text"
+                       placeholder="Écrivez votre message..."
+                       class="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                       required />
+
+                <button type="submit"
+                        class="rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 text-sm font-medium">
+                    Envoyer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            const chatToggle = document.getElementById("chat-toggle");
+            const chatClose = document.getElementById("chat-close");
+            const chatPanel = document.getElementById("chat-panel");
+            const chatForm = document.getElementById("chat-form");
+            const chatInput = document.getElementById("chat-input");
+            const chatMessages = document.getElementById("chat-messages");
+
+            function appendMessage(text, sender = "bot") {
+                const wrapper = document.createElement("div");
+                wrapper.className = sender === "user" ? "flex justify-end" : "flex justify-start";
+
+                const bubble = document.createElement("div");
+                bubble.className = sender === "user"
+                    ? "max-w-[85%] bg-slate-900 text-white rounded-2xl px-4 py-3 shadow-sm whitespace-pre-line"
+                    : "max-w-[85%] bg-white border border-slate-200 text-slate-800 rounded-2xl px-4 py-3 shadow-sm whitespace-pre-line";
+
+                bubble.textContent = text;
+                wrapper.appendChild(bubble);
+                chatMessages.appendChild(wrapper);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function showTyping() {
+                const wrapper = document.createElement("div");
+                wrapper.className = "flex justify-start";
+                wrapper.id = "typing-indicator";
+
+                const bubble = document.createElement("div");
+                bubble.className = "max-w-[85%] bg-white border border-slate-200 text-slate-500 rounded-2xl px-4 py-3 shadow-sm";
+                bubble.textContent = "Assistant en train d’écrire...";
+                wrapper.appendChild(bubble);
+
+                chatMessages.appendChild(wrapper);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function hideTyping() {
+                const el = document.getElementById("typing-indicator");
+                if (el) el.remove();
+            }
+
+            chatToggle.addEventListener("click", () => {
+                chatPanel.classList.toggle("hidden");
+            });
+
+            chatClose.addEventListener("click", () => {
+                chatPanel.classList.add("hidden");
+            });
+
+            chatForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const message = chatInput.value.trim();
+                if (!message) return;
+
+                appendMessage(message, "user");
+                chatInput.value = "";
+                showTyping();
+
+                try {
+                    const response = await fetch("/api/chat2", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ message })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Erreur HTTP " + response.status);
+                    }
+
+                    const data = await response.json();
+                    hideTyping();
+                    appendMessage(data.reply || "Je n’ai pas pu répondre.", "bot");
+                } catch (error) {
+                    hideTyping();
+                    appendMessage("Erreur de communication avec le serveur.", "bot");
+                }
+            });
+        })();
+    </script>
+</div>
+</body>
+</html>

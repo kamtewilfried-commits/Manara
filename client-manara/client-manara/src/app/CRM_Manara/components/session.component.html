@@ -1,0 +1,78 @@
+<app-header-parent></app-header-parent>
+
+<div class="flex min-h-screen bg-slate-100 dark:bg-slate-900 items-stretch transition-colors duration-200">
+
+  <app-sidebar-parent
+    [activePage]="'session'"
+    [connectedUser]="connectedUser"
+    [unreadNotifications]="unreadNotifications">
+  </app-sidebar-parent>
+
+  <main class="flex-1 p-8">
+
+    <div *ngIf="erreur"
+         class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+      {{ erreur }}
+    </div>
+
+    <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white">Sessions disponibles</h1>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Choisissez une session et ajoutez-la au panier pour votre enfant
+        </p>
+      </div>
+
+      <span class="inline-flex rounded-full bg-blue-50 dark:bg-blue-900/30 px-4 py-2 text-sm font-bold text-blue-700 dark:text-blue-300">
+        {{ children.length }} enfant(s)
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+
+      <div *ngFor="let session of sessions"
+           class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+
+        <h2 class="mb-4 text-xl font-extrabold text-blue-700 dark:text-blue-400">
+          {{ session.activity?.name || 'Session' }}
+        </h2>
+
+        <div class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+          <p><strong>📅 Début :</strong> {{ session.startDate | date:'short' }}</p>
+          <p><strong>🏁 Fin :</strong> {{ session.endDate | date:'short' }}</p>
+          <p><strong>📍 Lieu :</strong> {{ session.location }}</p>
+
+          <p>
+            <strong>👥 Places :</strong>
+            <span [ngClass]="session.availableSpots <= 2 ? 'text-red-600 font-bold' : 'text-emerald-600 font-bold'">
+              {{ session.availableSpots }}
+            </span>
+          </p>
+
+          <p class="text-lg font-extrabold text-emerald-600">
+            {{ session.prixSession | currency:'CAD' }}
+          </p>
+        </div>
+
+        <select
+          class="mt-5 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-600"
+          [(ngModel)]="session.selectedChildId">
+          <option [ngValue]="null">👶 Choisir un enfant</option>
+          <option *ngFor="let child of children" [ngValue]="child.id">
+            {{ child.firstName }} {{ child.lastName }}
+          </option>
+        </select>
+
+        <button
+          class="mt-4 w-full rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white hover:bg-blue-800 disabled:bg-slate-300"
+          [disabled]="session.availableSpots <= 0"
+          (click)="addSessionToCart(session)">
+          🛒 Ajouter au panier
+        </button>
+
+      </div>
+
+    </div>
+
+  </main>
+</div>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<nav th:fragment="sidebarParent(activePage)"
+     class="min-h-screen w-72 bg-[#03ae87] px-5 py-6 text-white">
+
+    <!-- Profil -->
+    <div class="mb-8 rounded-2xl bg-white/10 p-4 backdrop-blur">
+        <div class="text-sm font-semibold"
+             th:text="${connectedUser.firstName} + ' ' + ${connectedUser.lastName}">
+            Marc Dupont
+        </div>
+        <div class="mt-1 text-xs text-white/70">Parent</div>
+    </div>
+
+    <!-- Menu -->
+    <div class="space-y-2">
+
+        <a th:href="@{/parent/dashboard}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'dashboard'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Tableau de bord
+        </a>
+
+        <a th:href="@{/parent/enfants}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'enfants'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Mes enfants
+        </a>
+
+        <a th:href="@{/parent/activites}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'activites'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Activités disponibles
+        </a>
+
+        <a th:href="@{/parent/inscriptions}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'inscriptions'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Mes inscriptions
+        </a>
+
+        <a th:href="@{/parent/planning}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'planning'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Planning
+        </a>
+
+        <a th:href="@{/parent/notifications}"
+           class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'notifications'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <div class="flex items-center gap-3">
+                <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+                Notifications
+            </div>
+
+            <span th:if="${unreadNotifications != null and unreadNotifications > 0}"
+                  class="ml-3 inline-flex min-w-[24px] items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-bold text-[#4338CA]"
+                  th:text="${unreadNotifications}">
+                2
+            </span>
+        </a>
+
+        <a th:href="@{/parent/profil}"
+           class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition"
+           th:classappend="${activePage == 'profil'} ? ' bg-white/20' : ' hover:bg-white/10'">
+            <span class="h-2.5 w-2.5 rounded-full bg-white"></span>
+            Mon profil
+        </a>
+
+    </div>
+
+</nav>
+
+</body>
+</html>

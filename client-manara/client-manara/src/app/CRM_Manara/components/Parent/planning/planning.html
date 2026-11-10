@@ -1,0 +1,139 @@
+<div class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors duration-200">
+  <app-header-parent [connectedUser]="connectedUser"></app-header-parent>
+
+  <div class="flex bg-slate-100 dark:bg-slate-900">
+    <app-sidebar-parent
+      [activePage]="'planning'"
+      [connectedUser]="connectedUser"
+      [unreadNotifications]="unreadNotifications">
+    </app-sidebar-parent>
+
+    <main class="flex-1 p-8">
+
+      <div
+        *ngIf="erreur"
+        class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
+      >
+        {{ erreur }}
+      </div>
+
+      <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Planning</h1>
+          <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+            {{ weekLabel }}
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            (click)="semainePrecedente()"
+            class="inline-flex items-center rounded-full border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-700">
+            ← Préc.
+          </button>
+
+          <button
+            type="button"
+            (click)="allerAujourdhui()"
+            class="inline-flex items-center rounded-full bg-blue-700 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800">
+            Aujourd'hui
+          </button>
+
+          <button
+            type="button"
+            (click)="semaineSuivante()"
+            class="inline-flex items-center rounded-full border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-700">
+            Suiv. →
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-4 flex flex-wrap gap-4">
+        <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <div class="h-3 w-3 rounded-sm border-l-4 border-blue-600 bg-blue-100"></div>
+          <span>Activité confirmée</span>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <div class="h-3 w-3 rounded-sm border-l-4 border-amber-700 bg-amber-100"></div>
+          <span>En attente de confirmation</span>
+        </div>
+      </div>
+
+      <div
+        *ngIf="planningEvents.length > 0"
+        class="overflow-x-auto rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm"
+      >
+        <div class="min-w-[900px]">
+
+          <div class="grid grid-cols-8 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400">
+            <div class="px-4 py-4 text-xs font-extrabold uppercase tracking-wide">Heure</div>
+
+            <div
+              *ngFor="let day of weekDays"
+              class="px-4 py-4 text-xs font-extrabold uppercase tracking-wide"
+            >
+             {{ day | date:'EEE dd/MM' }}
+            </div>
+          </div>
+
+          <div
+            *ngFor="let slot of timeSlots"
+            class="grid grid-cols-8 border-b border-slate-100 dark:border-slate-700/50 last:border-b-0"
+          >
+            <div class="border-r border-slate-100 dark:border-slate-700/50 px-4 py-4 text-sm font-bold text-slate-600 dark:text-slate-400">
+              {{ slot }}
+            </div>
+
+            <div
+              *ngFor="let day of weekDays"
+              class="min-h-[110px] border-r border-slate-100 dark:border-slate-700/50 p-3 last:border-r-0"
+            >
+              <div
+                *ngFor="let event of getEventsForCell(day, slot)"
+                class="mb-2 rounded-2xl border-l-4 p-3 text-sm shadow-sm"
+                [ngClass]="event.status === 'CONFIRMED' || event.status === 'CONFIRMED_PAYMENT'
+                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-200'
+                  : 'border-amber-700 bg-amber-50 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200'"
+              >
+                <strong class="block text-xs font-extrabold uppercase tracking-wide">
+                  {{ event.activityName }}
+                </strong>
+
+                <span class="mt-1 block text-xs opacity-80">
+                  👶 {{ event.childName }}
+                </span>
+
+                <span class="mt-1 block text-xs opacity-70">
+                  📍 {{ event.location }}
+                </span>
+
+                <span class="mt-1 block text-xs opacity-70">
+                  {{ event.startDate| date:'shortTime' }} - {{ event.endDate | date:'shortTime' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="planningEvents.length === 0 && !erreur"
+        class="rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-10 text-center shadow-sm"
+      >
+        <p class="mb-4 text-sm font-medium text-slate-500 dark:text-slate-400">
+          Aucune session prévue pour cette semaine.
+        </p>
+
+        <a
+          routerLink="/parent/activites"
+          class="inline-flex items-center rounded-full bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800"
+        >
+          Voir les activités disponibles
+        </a>
+      </div>
+
+    </main>
+  </div>
+</div>

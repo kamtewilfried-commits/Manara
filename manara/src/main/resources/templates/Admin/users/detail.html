@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Détail utilisateur</title>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/parent.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/headerAdmin :: headerAdmin}"></div>
+
+<div class="admin-layout">
+
+    <div th:replace="~{fragments/sidebarAdmin :: sidebarAdmin('utilisateurs')}"></div>
+
+    <main class="admin-content">
+
+        <div class="dashboard-header">
+            <div>
+                <div class="page-title"
+                     th:text="${user.firstName} + ' ' + ${user.lastName}">Nom</div>
+                <p class="page-subtitle" th:text="${user.email}">Email</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <a th:href="@{/templates/Admin/utilisateurs/{id}/modifier(id=${user.id})}"
+                   th:if="${user.role != 'PARENT'}"
+                   class="btn btn-secondary">Modifier</a>
+                <form th:action="@{/templates/Admin/utilisateurs/{id}/toggle(id=${user.id})}"
+                      method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit"
+                            class="btn"
+                            th:classappend="${user.active} ? 'btn-danger' : 'btn-success'"
+                            th:text="${user.active} ? 'Désactiver le compte' : 'Réactiver le compte'"
+                            th:onclick="${user.active} ? 'return confirm(\'Désactiver ce compte ?\')' : ''">
+                    </button>
+                </form>
+                <a th:href="@{/templates/Admin/utilisateurs}" class="btn btn-secondary">← Retour</a>
+            </div>
+        </div>
+
+        <div th:if="${succes}" class="alert alert-success" th:text="${succes}"></div>
+
+        <!-- En-tête profil -->
+        <div class="user-detail-header">
+            <div class="avatar"
+                 th:text="${#strings.substring(user.firstName,0,1)
+                               + #strings.substring(user.lastName,0,1)}">AB</div>
+            <div>
+                <div style="font-size:16px; font-weight:700;"
+                     th:text="${user.firstName} + ' ' + ${user.lastName}">Nom</div>
+                <div style="font-size:13px; color:var(--color-text-muted);" th:text="${user.email}">Email</div>
+            </div>
+            <span class="badge"
+                  th:classappend="${user.role == 'PARENT'} ? 'badge-info' :
+                                      (${user.role == 'ANIMATEUR'} ? 'badge-primary' : 'badge-warning')"
+                  th:text="${user.role}" style="margin-left:auto;">Rôle</span>
+            <span class="badge"
+                  th:classappend="${user.active} ? 'badge-success' : 'badge-danger'"
+                  th:text="${user.active} ? 'Actif' : 'Inactif'">Statut</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+            <!-- Infos générales -->
+            <div class="card">
+                <div class="card-title" style="margin-bottom:12px;">Informations</div>
+                <table style="width:100%; font-size:13px; border-collapse:collapse;">
+                    <tr>
+                        <td style="padding:7px 0; color:var(--color-text-muted); width:160px;">Téléphone</td>
+                        <td th:text="${user.phone != null ? user.phone : '—'}">Téléphone</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:7px 0; color:var(--color-text-muted);">Membre depuis</td>
+                        <td th:text="${#temporals.format(user.createdAt, 'd MMMM yyyy')}">Date</td>
+                    </tr>
+                    <tr th:if="${user.role == 'PARENT'}">
+                        <td style="padding:7px 0; color:var(--color-text-muted);">Nb. enfants</td>
+                        <td th:text="${#lists.size(user.children)}">0</td>
+                    </tr>
+                    <tr th:if="${user.role == 'ANIMATEUR'}">
+                        <td style="padding:7px 0; color:var(--color-text-muted);">Activités</td>
+                        <td>
+                                <span th:each="act : ${user.activities}"
+                                      class="badge badge-primary"
+                                      style="margin-right:4px;"
+                                      th:text="${act.name}">Activité</span>
+                            <span th:if="${#lists.isEmpty(user.activities)}"
+                                  class="text-muted">Aucune</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Enfants si parent -->
+            <div class="card" th:if="${user.role == 'PARENT'}">
+                <div class="card-title" style="margin-bottom:12px;">Enfants inscrits</div>
+                <div th:if="${#lists.isEmpty(user.children)}"
+                     class="text-muted text-small">Aucun enfant enregistré</div>
+                <div th:each="child : ${user.children}"
+                     style="display:flex; justify-content:space-between;
+                                padding:8px 0; border-top:1px solid var(--color-border);
+                                font-size:13px;">
+                    <span th:text="${child.firstName} + ' ' + ${child.lastName}">Enfant</span>
+                    <span class="text-muted"
+                          th:text="${#temporals.format(child.birthDate, 'd MMM yyyy')}">Date</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Inscriptions récentes (si parent) -->
+        <div class="card" th:if="${user.role == 'PARENT' and !#lists.isEmpty(inscriptions)}">
+            <div class="card-header">
+                <span class="card-title">Inscriptions récentes</span>
+            </div>
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                    <tr><th>Enfant</th><th>Activité</th><th>Date</th><th>Statut</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="reg : ${inscriptions}">
+                        <td th:text="${reg.child.firstName}">Enfant</td>
+                        <td th:text="${reg.session.activity.name}">Activité</td>
+                        <td th:text="${#temporals.format(reg.session.startDate, 'd MMM yyyy')}">Date</td>
+                        <td>
+                                    <span class="badge"
+                                          th:classappend="${reg.status == 'CONFIRMED'} ? 'badge-success' :
+                                                          (${reg.status == 'PENDING'} ? 'badge-warning' : 'badge-danger')"
+                                          th:text="${reg.status == 'CONFIRMED'} ? 'Confirmée' :
+                                                   (${reg.status == 'PENDING'} ? 'En attente' : 'Annulée')">
+                                        Statut
+                                    </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+<div th:replace="fragments/chat-widget :: chatWidget"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

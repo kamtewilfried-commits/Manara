@@ -1,0 +1,272 @@
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    min-height: calc(100vh - 56px);
+}
+
+.admin-content {
+    padding: 24px;
+    background: var(--color-bg);
+}
+
+/* ---------- Dashboard stats ---------- */
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.admin-stat-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    border-top: 3px solid var(--color-primary);
+}
+
+.admin-stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.admin-stat-label {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.admin-stat-trend {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    margin-top: 6px;
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    font-weight: 500;
+}
+
+/* ---------- Filtres et recherche ---------- */
+.admin-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.admin-filters .form-control {
+    width: auto;
+}
+
+.admin-search {
+    min-width: 220px;
+}
+
+/* ---------- Tableaux admin (plus denses) ---------- */
+.admin-table-wrapper {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.admin-table thead th {
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.admin-table tbody td {
+    padding: 10px 14px;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text);
+    vertical-align: middle;
+}
+
+.admin-table tbody tr:hover {
+    background: var(--color-bg);
+}
+
+.admin-table .actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.admin-table .link-action {
+    color: var(--color-primary);
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+.admin-table .link-action:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+}
+
+.admin-table .link-action.danger {
+    color: var(--color-danger);
+}
+
+.admin-table .link-action.danger:hover {
+    color: #791F1F;
+}
+
+/* ---------- Formulaires admin ---------- */
+.admin-form-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    max-width: 520px;
+    margin-bottom: 20px;
+}
+
+.admin-form-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 4px;
+}
+
+.admin-form-subtitle {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 20px;
+}
+
+.admin-form-section {
+    border-top: 1px solid var(--color-border);
+    padding-top: 16px;
+    margin-top: 16px;
+}
+
+.admin-form-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+}
+
+/* ---------- Gestion utilisateurs ---------- */
+.user-role-parent    { background: var(--color-info-bg);    color: var(--color-info); }
+.user-role-admin     { background: var(--color-warning-bg); color: var(--color-warning); }
+.user-role-animateur { background: var(--color-primary-light); color: var(--color-primary-dark); }
+
+.user-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 16px;
+}
+
+/* ---------- Gestion paiements ---------- */
+.payments-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.payment-summary-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    text-align: center;
+}
+
+.payment-summary-amount {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 4px;
+}
+
+.payment-summary-label {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+/* Statuts paiement */
+.payment-completed { background: var(--color-success-bg); color: var(--color-success); }
+.payment-pending   { background: var(--color-warning-bg); color: var(--color-warning); }
+.payment-failed    { background: var(--color-danger-bg);  color: var(--color-danger);  }
+.payment-refunded  { background: var(--color-info-bg);    color: var(--color-info);    }
+
+/* ---------- Gestion notifications ---------- */
+.notification-form {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    max-width: 480px;
+    margin-bottom: 20px;
+}
+
+.notification-form textarea.form-control {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.notif-status-sent   { background: var(--color-success-bg); color: var(--color-success); }
+.notif-status-failed { background: var(--color-danger-bg);  color: var(--color-danger);  }
+.notif-status-pending { background: var(--color-warning-bg); color: var(--color-warning); }
+
+/* ---------- Inscriptions admin ---------- */
+.inscription-confirm-btn {
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    border: 1px solid var(--color-primary);
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.inscription-confirm-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+/* ---------- Sessions admin ---------- */
+.session-status-planned    { background: var(--color-info-bg);       color: var(--color-info); }
+.session-status-in-progress { background: var(--color-primary-light); color: var(--color-primary-dark); }
+.session-status-completed  { background: var(--color-bg-secondary);  color: var(--color-text-muted); }
+.session-status-cancelled  { background: var(--color-danger-bg);     color: var(--color-danger); }
+.session-status-full       { background: var(--color-danger-bg);     color: var(--color-danger); }
+
+/* ---------- Activités admin ---------- */
+.activity-status-active   { background: var(--color-success-bg); color: var(--color-success); }
+.activity-status-inactive { background: var(--color-bg-secondary); color: var(--color-text-muted); }

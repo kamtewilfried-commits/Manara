@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="fr"  xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portail parent</title>
+<link rel="stylesheet" th:href="@{/css/portail-parent.css}" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+
+
+  <!-- Header -->
+  <div th:replace="fragments/headerPortailParents:: header"></div>
+
+  <!-- Main -->
+  <main class="container page">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero__left">
+        <h1>Bienvenue 👋</h1>
+        <p class="muted">
+          Gérez les inscriptions, paiements, communications et horaires des activités de vos enfants.
+        </p>
+
+        <div class="quick">
+          <a class="btn btn--primary" href="#">+ Inscrire à une activité</a>
+          <a class="btn btn--soft" href="#">Voir la programmation</a>
+          <a class="btn btn--ghost" href="#">Télécharger un reçu</a>
+        </div>
+      </div>
+
+      <div class="hero__right">
+        <div class="stat">
+          <div class="stat__label">Prochaine activité</div>
+          <div class="stat__value">Yoga enfants</div>
+          <div class="stat__sub muted">Lun · 18:00 · Salle Jutras</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat__label">Solde</div>
+          <div class="stat__value">0,00 $</div>
+          <div class="stat__sub muted">Aucun paiement en attente</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grid -->
+    <section class="grid">
+      <!-- Enfants -->
+      <section class="card">
+        <div class="card__head">
+          <h2>Mes enfants</h2>
+          <a class="link" href="#">Gérer</a>
+        </div>
+
+        <div class="kids">
+          <article class="kid">
+            <div class="kid__avatar">A</div>
+            <div class="kid__info">
+              <div class="kid__name">Aïcha</div>
+              <div class="kid__meta muted">8 ans · 2 activités actives</div>
+            </div>
+            <a class="pill" href="#">Profil</a>
+          </article>
+
+          <article class="kid">
+            <div class="kid__avatar kid__avatar--alt">M</div>
+            <div class="kid__info">
+              <div class="kid__name">Mika</div>
+              <div class="kid__meta muted">11 ans · 1 activité active</div>
+            </div>
+            <a class="pill" href="#">Profil</a>
+          </article>
+
+          <button class="btn btn--ghost btn--full" type="button">+ Ajouter un enfant</button>
+        </div>
+      </section>
+
+      <!-- Paiements -->
+      <section class="card">
+        <div class="card__head">
+          <h2>Paiements</h2>
+          <a class="link" href="#">Voir tout</a>
+        </div>
+
+        <div class="list">
+          <div class="row">
+            <div>
+              <div class="row__title">Reçu – Session automne</div>
+              <div class="row__sub muted">Émis le 12 sept.</div>
+            </div>
+            <div class="row__right">
+              <div class="amount">95,00 $</div>
+              <span class="tag tag--ok">Payé</span>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <div class="row__title">Danse créative – Aïcha</div>
+              <div class="row__sub muted">Facture #1843</div>
+            </div>
+            <div class="row__right">
+              <div class="amount">0,00 $</div>
+              <span class="tag">Aucun dû</span>
+            </div>
+          </div>
+
+          <a class="btn btn--primary btn--full" href="#">Payer maintenant</a>
+        </div>
+      </section>
+
+      <!-- Messages -->
+      <section class="card">
+        <div class="card__head">
+          <h2>Messages</h2>
+          <a class="link" href="#">Boîte de réception</a>
+        </div>
+
+        <div class="messages">
+          <article class="msg">
+            <div class="msg__dot" aria-hidden="true"></div>
+            <div class="msg__body">
+              <div class="msg__title">Changement de salle – Qi Gong</div>
+              <div class="msg__sub muted">Le cours de mardi aura lieu au Studio 2.</div>
+            </div>
+            <div class="msg__time muted">10:18</div>
+          </article>
+
+          <article class="msg">
+            <div class="msg__dot msg__dot--muted" aria-hidden="true"></div>
+            <div class="msg__body">
+              <div class="msg__title">Confirmation d’inscription</div>
+              <div class="msg__sub muted">Votre paiement a été reçu. Merci!</div>
+            </div>
+            <div class="msg__time muted">Hier</div>
+          </article>
+
+          <a class="btn btn--ghost btn--full" href="#">Nouveau message</a>
+        </div>
+      </section>
+
+      <!-- Calendrier -->
+      <section class="card">
+        <div class="card__head">
+          <h2>Calendrier</h2>
+          <a class="link" href="#">Exporter</a>
+        </div>
+
+        <div class="calendar">
+          <div class="event">
+            <div class="event__date">
+              <div class="event__day">Lun</div>
+              <div class="event__num">23</div>
+            </div>
+            <div class="event__info">
+              <div class="event__title">Yoga enfants</div>
+              <div class="event__sub muted">18:00 · Salle Jutras · Aïcha</div>
+            </div>
+            <a class="pill pill--blue" href="#">Détails</a>
+          </div>
+
+          <div class="event">
+            <div class="event__date">
+              <div class="event__day">Mar</div>
+              <div class="event__num">24</div>
+            </div>
+            <div class="event__info">
+              <div class="event__title">Qi Gong</div>
+              <div class="event__sub muted">09:00 · Salle multi · Mika</div>
+            </div>
+            <a class="pill pill--blue" href="#">Détails</a>
+          </div>
+
+          <a class="btn btn--soft btn--full" href="#">Voir le calendrier complet</a>
+        </div>
+      </section>
+    </section>
+
+    <!-- Help -->
+    <section class="banner">
+      <div class="banner__icon" aria-hidden="true">i</div>
+      <div>
+        <h3>Besoin d’aide?</h3>
+        <p class="muted">Contactez-nous pour modifier une inscription, demander un remboursement ou poser une question.</p>
+      </div>
+      <a class="btn btn--soft" href="#">Nous joindre</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span class="muted">© 2026 · Portail parent</span>
+      <div class="footer__links">
+        <a class="muted" href="#">Confidentialité</a>
+        <span class="muted">·</span>
+        <a class="muted" href="#">Conditions</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<div class="min-h-screen bg-slate-100">
+  <app-header-animateur [connectedUser]="connectedUser"></app-header-animateur>
+
+  <div class="flex">
+    <app-sidebar-animateur
+      [activePage]="'registrations'"
+      [connectedUser]="connectedUser">
+    </app-sidebar-animateur>
+
+    <main class="flex-1 p-8">
+      <div class="mb-6">
+        <h1 class="text-3xl font-extrabold text-slate-900">Inscriptions</h1>
+        <p class="mt-1 text-sm text-slate-500">
+          Gérez les inscriptions envoyées par les parents
+        </p>
+      </div>
+
+      <div *ngIf="errorMessage" class="mb-4 rounded-xl bg-red-100 px-4 py-3 text-red-700">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="mb-4 rounded-xl bg-green-100 px-4 py-3 text-green-700">
+        {{ successMessage }}
+      </div>
+
+      <div class="mb-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+        <select
+          [(ngModel)]="statusFilter"
+          (change)="filtrer()"
+          class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <option value="">Tous les statuts</option>
+          <option value="PENDING">En attente</option>
+          <option value="PENDING_PAYMENT">Paiement en attente</option>
+          <option value="CONFIRMED">Confirmée</option>
+          <option value="CANCELLED">Annulée</option>
+        </select>
+      </div>
+
+      <div class="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-50 text-slate-500">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Session</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Enfant</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Date</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Lieu</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Statut</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Confirmé par</th>
+              <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 text-slate-700">
+            <tr *ngFor="let r of filteredRegistrations" class="hover:bg-slate-50">
+              <td class="px-6 py-4 font-semibold">
+                Session #{{ r.sessionId }}
+              </td>
+
+              <td class="px-6 py-4">
+                {{ r.childFullName || 'Enfant inconnu' }}
+              </td>
+
+              <td class="px-6 py-4">
+                {{ r.sessionStartDate | date:'d MMM yyyy HH:mm' }}
+              </td>
+
+              <td class="px-6 py-4">
+                {{ r.sessionLocation || 'Lieu non défini' }}
+              </td>
+
+              <td class="px-6 py-4">
+                <span
+                  class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                  [ngClass]="{
+                    'bg-emerald-50 text-emerald-700': r.status === 'CONFIRMED',
+                    'bg-yellow-50 text-yellow-700': r.status === 'PENDING' || r.status === 'PENDING_PAYMENT',
+                    'bg-red-50 text-red-700': r.status === 'CANCELLED'
+                  }">
+                  {{ getStatusLabel(r.status) }}
+                </span>
+              </td>
+
+              <td class="px-6 py-4">
+                {{ r.confirmedByFullName || '-' }}
+              </td>
+
+              <td class="px-6 py-4">
+                <div class="flex gap-2">
+                 <button
+  *ngIf="r.status === 'PENDING' || r.status === 'PENDING_PAYMENT'||r.status=='CANCELLED'"
+  type="button"
+  (click)="accepter(r.id!); $event.stopPropagation()"
+  class="rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700">
+  Accepter
+</button>
+<button
+  *ngIf="r.status !== 'CANCELLED'"
+  type="button"
+  (click)="refuser(r.id!)"
+  class="rounded-full bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700">
+  Annuler
+</button>
+
+                  <span *ngIf="r.status === 'CONFIRMED'" class="text-xs font-bold text-emerald-600">
+                    Acceptée
+                  </span>
+
+                  <span *ngIf="r.status === 'CANCELLED'" class="text-xs font-bold text-red-600">
+                    Annulée
+                  </span>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredRegistrations.length === 0">
+              <td colspan="7" class="px-6 py-10 text-center text-sm text-slate-400">
+                Aucune inscription trouvée
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>

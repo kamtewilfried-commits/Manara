@@ -1,0 +1,293 @@
+<app-header-acceuil  ></app-header-acceuil>
+
+
+    <div class="grid min-h-[720px] grid-cols-1 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl lg:grid-cols-[340px_1fr]">
+
+      <!-- SIDEBAR -->
+      <aside class="border-r border-slate-200 bg-slate-900 p-5 text-white">
+
+        <button
+          class="mb-4 w-full rounded-2xl bg-emerald-500 px-4 py-3 font-bold text-white shadow hover:bg-emerald-600"
+          (click)="groupMode = !groupMode">
+          {{ groupMode ? 'Annuler groupe' : 'Créer un groupe' }}
+        </button>
+
+        <div *ngIf="groupMode" class="mb-5 rounded-3xl bg-white/10 p-4">
+          <input
+            type="text"
+            placeholder="Nom du groupe"
+            [(ngModel)]="groupName"
+            class="mb-3 w-full rounded-2xl border border-white/20 bg-white px-4 py-3 text-slate-900 outline-none"
+          />
+
+          <small class="mb-3 block text-slate-300">
+            {{ selectedGroupUsers.length }} utilisateur(s) sélectionné(s)
+          </small>
+
+          <button
+            type="button"
+            class="w-full rounded-2xl bg-cyan-600 px-4 py-3 font-bold text-white hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50"
+            (click)="createGroupConversation()"
+            [disabled]="selectedGroupUsers.length < 2">
+            Créer le groupe
+          </button>
+        </div>
+
+        <!-- GROUPES -->
+        <div class="mb-6" *ngIf="groupChannels.length > 0">
+          <h4 class="mb-3 text-sm font-extrabold uppercase tracking-wide text-slate-400">
+            Groupes
+          </h4>
+
+          <div
+            *ngFor="let group of groupChannels"
+            class="mb-3 cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
+            [class.!bg-emerald-600]="activeChannel?.id === group.id"
+            (click)="openGroupChannel(group)">
+
+          <div class="flex items-center justify-between gap-2">
+
+  <strong class="block text-white">
+    {{ group.data?.name || 'Groupe sans nom' }}
+  </strong>
+
+  <div class="flex items-center gap-2">
+
+    <!-- MESSAGE -->
+    <span
+      *ngIf="unreadByChannel[group.id] > 0"
+      class="flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-2 text-xs font-extrabold text-white">
+
+      {{ unreadByChannel[group.id] }}
+
+    </span>
+
+    <!-- APPEL -->
+    <span
+      *ngIf="incomingCallChannelId === group.id"
+      class="flex h-6 min-w-6 animate-pulse items-center justify-center rounded-full bg-emerald-500 px-2 text-xs font-extrabold text-white">
+
+      📞
+
+    </span>
+
+  </div>
+
+</div>
+
+            <small class="text-slate-300">
+              {{ group.data?.member_count || 'Plusieurs' }} membres
+            </small>
+
+            <button
+  type="button"
+  class="mt-3 flex items-center gap-2 rounded-xl bg-red-500/20 px-3 py-2 text-sm font-bold text-red-200 transition hover:bg-red-500/30"
+  (click)="deleteOrLeaveGroup(group, $event)">
+
+  <!-- DELETE -->
+  <svg
+    *ngIf="isGroupCreator(group)"
+    xmlns="http://www.w3.org/2000/svg"
+    class="h-4 w-4"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    stroke-width="2">
+
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673A2.25 2.25 0 0 1 15.916 21H8.084a2.25 2.25 0 0 1-2.245-1.327L4.772 5.79m14.456 0A48.108 48.108 0 0 0 15.75 5.25m3.478.54a48.11 48.11 0 0 1-7.956 0m0 0A48.667 48.667 0 0 1 9.75 5.25m1.522.54V4.5A2.25 2.25 0 0 1 13.5 2.25h.75A2.25 2.25 0 0 1 16.5 4.5v1.29"/>
+  </svg>
+
+  <!-- LEAVE -->
+  <svg
+    *ngIf="!isGroupCreator(group)"
+    xmlns="http://www.w3.org/2000/svg"
+    class="h-4 w-4"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    stroke-width="2">
+
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m-3-3h9m0 0-3-3m3 3-3 3"/>
+  </svg>
+
+  {{ isGroupCreator(group) ? 'Supprimer' : 'Quitter' }}
+
+</button>
+          </div>
+        </div>
+
+        <!-- RECHERCHE -->
+     <div class="relative mb-4">
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    stroke-width="2">
+
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"/>
+  </svg>
+
+  <input
+    type="text"
+    placeholder="Rechercher..."
+    [(ngModel)]="searchTerm"
+    (input)="searchUsers()"
+    class="w-full rounded-2xl border border-white/20 bg-white py-3 pl-12 pr-4 text-slate-900 outline-none"
+  />
+</div>
+
+        <!-- USERS -->
+        <div
+          *ngFor="let user of filteredUsers"
+          class="mb-3 cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
+          [class.!bg-cyan-700]="selectedUser?.id === user.id || isSelectedForGroup(user)"
+          (click)="groupMode ? toggleUserForGroup(user) : openConversation(user)">
+
+       <div class="flex items-center justify-between gap-2">
+
+  <strong class="block text-white">
+    {{ user.name }}
+  </strong>
+
+  <div class="flex items-center gap-2">
+
+    <!-- MESSAGE -->
+    <span
+      *ngIf="unreadByUser[user.id] > 0"
+      class="flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-2 text-xs font-extrabold text-white">
+
+      {{ unreadByUser[user.id] }}
+
+    </span>
+
+    <!-- APPEL -->
+    <span
+      *ngIf="incomingCallUserId === user.id"
+      class="flex h-6 min-w-6 animate-pulse items-center justify-center rounded-full bg-emerald-500 px-2 text-xs font-extrabold text-white">
+
+      📞
+
+    </span>
+
+  </div>
+
+</div>
+          <small class="text-slate-300">
+            {{ user.email }}
+          </small>
+        </div>
+
+      </aside>
+
+      <!-- CHAT -->
+      <section class="flex flex-col bg-slate-50">
+
+        <app-video-call
+          *ngIf="activeChannel"
+          [activeChannel]="activeChannel"
+          [currentUserId]="currentUserId"
+          [currentUserName]="currentUserName"
+          [apiKey]="apiKey">
+        </app-video-call>
+
+        <div class="flex-1 p-5" *ngIf="activeChannel; else noConversation">
+          <div class="h-full overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
+            <stream-channel>
+              <stream-channel-header></stream-channel-header>
+              <stream-message-list></stream-message-list>
+              <stream-notification-list></stream-notification-list>
+
+              <stream-message-input [displayVoiceRecordingButton]="true">
+                <ng-template voice-recorder let-service="service">
+                  <stream-voice-recorder [voiceRecorderService]="service"></stream-voice-recorder>
+                </ng-template>
+              </stream-message-input>
+
+              <stream-thread name="thread">
+                <stream-message-list mode="thread"></stream-message-list>
+
+                <stream-message-input mode="thread" [displayVoiceRecordingButton]="true">
+                  <ng-template voice-recorder let-service="service">
+                    <stream-voice-recorder [voiceRecorderService]="service"></stream-voice-recorder>
+                  </ng-template>
+                </stream-message-input>
+              </stream-thread>
+            </stream-channel>
+          </div>
+        </div>
+
+     <ng-template #noConversation>
+  <div class="flex flex-1 items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-10">
+
+    <div class="max-w-lg rounded-[2rem] border border-slate-200 bg-white/90 p-12 text-center shadow-2xl backdrop-blur">
+
+      <!-- LOGO -->
+      <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-cyan-600 shadow-lg">
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-12 w-12 text-white"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2">
+
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M2.25 12c0-4.97 4.78-9 10.5-9s10.5 4.03 10.5 9-4.78 9-10.5 9a11.7 11.7 0 0 1-4.215-.777L3 21l1.26-4.41A8.962 8.962 0 0 1 2.25 12Z"/>
+        </svg>
+
+      </div>
+
+      <!-- TITRE -->
+      <h2 class="mb-4 text-3xl font-extrabold text-slate-900">
+        Aucune conversation sélectionnée
+      </h2>
+
+      <!-- TEXTE -->
+      <p class="mb-8 text-lg leading-relaxed text-slate-500">
+        Sélectionne un utilisateur ou crée un groupe pour commencer
+        une discussion en temps réel avec appels vidéo et partage d’écran.
+      </p>
+
+      <!-- BADGES -->
+      <div class="flex flex-wrap items-center justify-center gap-3">
+
+        <div class="rounded-2xl bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-700">
+          Messagerie instantanée
+        </div>
+
+        <div class="rounded-2xl bg-cyan-100 px-4 py-2 text-sm font-bold text-cyan-700">
+          Appels vidéo
+        </div>
+
+        <div class="rounded-2xl bg-violet-100 px-4 py-2 text-sm font-bold text-violet-700">
+          Groupes
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</ng-template>
+
+      </section>
+
+    </div>
+
+
+<app-footer-acceuil></app-footer-acceuil>

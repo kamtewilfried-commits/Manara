@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>CRM Manara</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body th:fragment="navBar" class="bg-slate-50 text-slate-800">
+
+<!-- NAVBAR -->
+<div class="w-full bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 py-4">
+
+            <!-- Logo -->
+            <div class="flex items-center justify-between">
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
+                        <span class="text-white font-bold text-lg">
+                            <img th:src="@{/images/Logo.png}"
+                                 class="w-32 h-15 rounded-full object-cover border-4 border-blue-900 shadow-lg" />
+                        </span>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-emerald-600 transition">
+                            CRM Manara
+                        </h1>
+                        <p class="text-xs text-slate-500">Centre d’activités communautaires</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Welcome -->
+            <div class="flex items-center">
+                <p class="text-sm md:text-base text-slate-600 bg-slate-100 px-4 py-2 rounded-full">
+                    Bienvenue,
+                    <span class="font-semibold text-emerald-700" th:text="${email}"></span> 👋
+                </p>
+            </div>
+
+            <!-- Navigation -->
+            <nav aria-label="Navigation principale" class="flex flex-wrap items-center gap-3 md:gap-4">
+                <a href="#"
+                   class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">
+                    Programmation
+                </a>
+                <div class="flex gap-6">
+                    <a th:href="@{/dashboard}"
+                       th:if="${connectedUser.role == 'ADMIN'}"
+                       class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">
+                        Admin
+                    </a>
+
+                    <a th:href="@{/parent/activites}"
+                       th:if="${connectedUser.role == 'PARENT'}"
+                       class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">
+                        Parents
+                    </a>
+
+                    <a th:href="@{/animateur/dashboard}"
+                       th:if="${connectedUser.role == 'ANIMATEUR'}"
+                       class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">
+                        Animateur
+                    </a>
+
+                </div>
+
+                <a th:href="@{/Chat}"
+                   class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">
+                    Chat
+                </a>
+                <a th:href="@{/videocall}"
+                   class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">
+                    ChatVidéo
+                </a>
+                <a href="#evenements"
+                   class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">
+                    Événements
+                </a>
+
+                <a href="#a-propos"
+                   class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">
+                    À propos
+                </a>
+
+                <a th:href="@{/checkout}"
+                   class="inline-flex items-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition">
+                    Faites un don
+                </a>
+
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit"
+                            class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 transition shadow-sm">
+                        Se déconnecter
+                    </button>
+                </form>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- HERO -->
+<header class="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 text-white">
+    <div class="absolute inset-0 bg-black/10"></div>
+
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-10 py-16 md:py-24">
+        <div class="max-w-3xl">
+
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-emerald-100 mb-6">
+                <a href="#" class="hover:text-white transition">Accueil</a>
+                <span aria-hidden="true">›</span>
+                <span class="text-white font-medium">Programmation</span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight mb-5">
+                Programmation – Activités
+            </h1>
+
+            <!-- Description -->
+            <p class="text-lg md:text-xl text-emerald-50 leading-relaxed mb-8">
+                Des activités pour tous : culture, sports, bien-être et ateliers.
+                Trouvez votre prochaine activité et inscrivez-vous facilement en quelques clics.
+            </p>
+
+            <!-- Buttons -->
+            <div class="flex flex-wrap gap-4">
+                <a href="#liste"
+                   class="inline-flex items-center rounded-2xl bg-white px-6 py-3 text-sm md:text-base font-bold text-emerald-700 shadow-lg hover:bg-emerald-50 transition">
+                    Voir les activités
+                </a>
+
+                <a href="#"
+                   class="inline-flex items-center rounded-2xl border border-white/30 bg-white/10 px-6 py-3 text-sm md:text-base font-semibold text-white backdrop-blur hover:bg-white/20 transition">
+                    Consulter les politiques
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+</body>
+</html>

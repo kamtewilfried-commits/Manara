@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Manara — Liste des inscrits</title>
+    <link rel="shortcut icon" th:href="@{/image/logo.png}" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body  class="bg-slate-950">
+
+<div th:replace="~{fragments/headerAnimateur :: headerAnimateur}"></div>
+
+<div class="flex min-h-screen bg-slate-100">
+
+    <div th:replace="~{fragments/sidebarAnimateur :: sidebarAnimateur('sessions')}"></div>
+
+    <main  class="container page">
+
+        <!-- Header -->
+        <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900"
+                    th:text="${session.activity.name}">
+                    Activité
+                </h1>
+
+                <p class="mt-1 text-sm font-medium text-slate-500"
+                   th:text="${#temporals.format(session.startDate, 'EEEE d MMMM yyyy')}
+                    + ' · '
+                    + ${#temporals.format(session.startDate, 'HH:mm')}
+                    + ' – '
+                    + ${#temporals.format(session.endDate, 'HH:mm')}
+                    + ' · '
+                    + ${session.location}">
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <a th:href="@{/animateur/presence/{id}(id=${session.id})}"
+                   th:if="${session.status == 'PLANNED' or session.status == 'IN_PROGRESS'}"
+                   class="rounded-full bg-blue-600 px-5 py-2 text-sm font-bold text-white hover:bg-blue-700 transition">
+                    Prendre les présences
+                </a>
+
+                <a th:href="@{/animateur/sessions}"
+                   class="rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">
+                    ← Retour
+                </a>
+            </div>
+        </div>
+
+        <!-- Résumé -->
+        <div class="mb-6 flex flex-wrap gap-3 text-sm">
+    <span class="rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-700"
+          th:text="'Inscrits : ' + ${session.capacity - session.availableSpots} + ' / ' + ${session.capacity}">
+    </span>
+
+            <span class="rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-700"
+                  th:text="'Tranche d\'âge : ' + ${session.activity.ageRange}">
+    </span>
+
+            <span class="rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-700"
+                  th:text="'Catégorie : ' + ${session.activity.category}">
+    </span>
+
+            <span class="inline-flex rounded-full px-4 py-2 text-xs font-bold"
+                  th:classappend="${session.status == 'IN_PROGRESS'} ? ' bg-blue-50 text-blue-700' :
+                          (${session.status == 'PLANNED'} ? ' bg-indigo-50 text-indigo-700' :
+                          (${session.status == 'COMPLETED'} ? ' bg-emerald-50 text-emerald-700' :
+                          ' bg-red-50 text-red-700'))"
+                  th:text="${session.status == 'IN_PROGRESS'} ? 'En cours' :
+                   (${session.status == 'PLANNED'} ? 'Planifiée' :
+                   (${session.status == 'COMPLETED'} ? 'Terminée' : 'Annulée'))">
+    </span>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <table class="min-w-full text-sm">
+
+                <thead class="bg-slate-50 text-slate-500">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Prénom</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Nom</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Naissance</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Allergies</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Notes</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Parent</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Téléphone</th>
+                    <th class="px-6 py-4 text-left text-xs font-extrabold uppercase">Statut</th>
+                </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-200 text-slate-700">
+                <tr th:each="reg : ${registrations}" class="hover:bg-slate-50">
+
+                    <td class="px-6 py-4 font-semibold"
+                        th:text="${reg.child.firstName}">
+                        Prénom
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${reg.child.lastName}">
+                        Nom
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${#temporals.format(reg.child.birthDate, 'd MMM yyyy')}">
+                        Date
+                    </td>
+
+                    <td class="px-6 py-4">
+                <span th:if="${reg.child.allergies != null and !reg.child.allergies.isEmpty()}"
+                      class="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700"
+                      th:text="${reg.child.allergies}">
+                </span>
+
+                        <span th:if="${reg.child.allergies == null or reg.child.allergies.isEmpty()}"
+                              class="text-slate-400">
+                    —
+                </span>
+                    </td>
+
+                    <td class="px-6 py-4 text-xs text-slate-500"
+                        th:text="${reg.child.medicalNotes != null ? reg.child.medicalNotes : '—'}">
+                        Notes
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${reg.child.parent.firstName} + ' ' + ${reg.child.parent.lastName}">
+                        Parent
+                    </td>
+
+                    <td class="px-6 py-4"
+                        th:text="${reg.child.parent.phone != null ? reg.child.parent.phone : '—'}">
+                        Tél.
+                    </td>
+
+                    <td class="px-6 py-4">
+                <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                      th:classappend="${reg.status == 'CONFIRMED'} ? ' bg-emerald-50 text-emerald-700' : ' bg-amber-50 text-amber-700'"
+                      th:text="${reg.status == 'CONFIRMED'} ? 'Confirmée' : 'En attente'">
+                </span>
+                    </td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(registrations)}">
+                    <td colspan="8" class="px-6 py-8 text-center text-slate-400">
+                        Aucun enfant inscrit à cette session
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>
